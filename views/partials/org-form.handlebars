@@ -1,0 +1,49 @@
+<form role="form" method="POST">
+    <div class="form-group fg-line">
+        <label for="org-name">Organization Name</label>
+        <input type="text" name="orgName" class="form-control input-sm" id="org-name" placeholder="Organization Name" value="{{org.name}}">
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-tagline">Tagline</label>
+        <input type="text" name="orgTagline" class="form-control input-sm" id="org-tagline" placeholder="Tagline" value="{{org.tagline}}">
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-subdomain">Subdomain</label>
+        <input type="text" name="orgSubdomain" class="form-control input-sm" id="org-subdomain" placeholder="subdomain" value="{{org.subdomain}}">
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-location">Location</label>
+        <input type="text" name="orgLocation" class="form-control input-sm" id="org-location" placeholder="Location (City, State, Country)" value='{{org.location}}'>
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-about">About</label>
+        <input type="text" name="orgAbout" class="form-control input-sm" id="org-about" placeholder="About" value='{{org.about}}' value='{{org.about}}'>
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-hero">Hero Image URL (1920x1080px)</label>
+        <input type="text" name="orgHero" class="form-control input-sm" id="org-hero" placeholder="Hero Image URL" value='{{org.heroImg}}'>
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-icon">Icon Image URL (400x400px)</label>
+        <input type="text" name="orgIcon" class="form-control input-sm" id="org-icon" placeholder="Icon Image URL" value='{{org.iconImg}}'>
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-website">Website</label>
+        <input type="text" name="orgWebsite" class="form-control input-sm" id="org-website" placeholder="Website URL" value='{{org.website}}'>
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-website">Twitter URL</label>
+        <input type="text" name="orgTwitter" class="form-control input-sm" id="org-twitter" placeholder="http://twitter.com/YOUR-ORGANIZATION" value='{{org.twitter}}'>
+    </div>
+    <div class="form-group fg-line">
+        <label for="org-website">Facebook Page URL</label>
+        <input type="text" name="orgFacebook" class="form-control input-sm" id="org-facebook" placeholder="http://facebook.com/YOUR-ORGANIZATION" value='{{org.facebook}}'>
+    </div>
+
+    <div class="form-group fg-line">
+      <label for="orgSurvey">Applicant Survey</label>
+      <input type="hidden" name="orgSurvey" class="form-control input-sm" id="org-survey" value='{{org.survey}}'>
+      <div class="build-wrap"></div>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm m-t-10 waves-effect btn-org-save">Save</button>
+</form>
