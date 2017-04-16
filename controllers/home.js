@@ -7,6 +7,8 @@ exports.index = function(req, res) {
       title: 'Home'
     });
   } else {
-    res.render('layouts/anon-landing')
+    res.render('home', {
+      layout: 'anon-landing'
+    })
   }
 };
