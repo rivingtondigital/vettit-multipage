@@ -1,6 +1,9 @@
 $(function() {
   // Your custom JavaScript goes here
-  var formData = JSON.parse($('#org-survey').val());
+  var formData = "";
+  if($('#org-survey').val().length) {
+    formData = JSON.parse($('#org-survey').val());
+  }
 
   var options = {
     disableFields: [
