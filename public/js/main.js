@@ -28,7 +28,7 @@ $(function() {
       $('form').submit();
     });
   } else if($('#fbTemplate').val()) {
-    var fbTemplate = document.getElementById('fb-template');
+    var fbTemplate = document.getElementById('fbTemplate');
     var formRender = $('.render-form').formRender({formData: fbTemplate.value});
   }
 
