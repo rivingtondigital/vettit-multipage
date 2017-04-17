@@ -21,6 +21,7 @@ dotenv.load();
 var HomeController = require('./controllers/home');
 var userController = require('./controllers/user');
 var orgController = require('./controllers/org');
+var appController = require('./controllers/application');
 var contactController = require('./controllers/contact');
 
 // Passport OAuth strategies
@@ -91,9 +92,14 @@ app.get('/logout', userController.logout);
 app.get('/unlink/:provider', userController.ensureAuthenticated, userController.unlink);
 
 app.get('/s/:subdomain', orgController.showOrg);
-app.get('/s/:subdomain/apply', orgController.newApp);
-app.post('/s/:subdomain/apply', orgController.createApp);
-app.get('/s/:subdomain/status', orgController.appStatus);
+app.get('/s/:subdomain/apply', appController.newApp);
+app.post('/s/:subdomain/apply', appController.createApp);
+app.get('/s/:subdomain/status', appController.appStatus);
+
+app.get('/orgs/:id/applications', appController.listApps);
+app.get('/orgs/:id/applications/:app_id', appController.getApplication);
+app.post('/orgs/:id/applications/:app_id', appController.updateApplication);
+
 app.get('/orgs/new', orgController.newOrg);
 app.get('/orgs/:id/edit', orgController.editOrg);
 app.post('/orgs/new', orgController.createOrg);

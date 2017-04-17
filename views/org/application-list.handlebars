@@ -1,0 +1,17 @@
+<section id="content" class="content-alt">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Applications</h2>
+            </div>
+
+            <div class="card-body card-padding">
+              <ul>
+                {{#each apps}}
+                  <li><a href='./applications/{{this._id}}/'>{{this.user.name}}</a></li>
+                {{/each}}
+              </ul>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,7 +1,7 @@
 $(function() {
   // Your custom JavaScript goes here
   var formData = "";
-  if($('#org-survey').val()) {
+  if($('#org-survey').val() != undefined) {
     if($('#org-survey').val().length) {
       formData = JSON.parse($('#org-survey').val());
     }
