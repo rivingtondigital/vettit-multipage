@@ -128,7 +128,34 @@ exports.listApps = function(req, res) {
  * GET /orgs/:id/applications/:app_id
  */
 exports.getApplication = function(req, res) {
-  res.redirect("/");
+  if (req.isAuthenticated()) {
+    User.findById(req.user.id, function(err, theUser) {
+      if(theUser.org == req.params.id) {
+        Application.findById(req.params.app_id).populate('user').exec(function(err, theApp) {
+          if(!err) {
+            console.log(theApp);
+            var theResponses = [];
+            if(theApp.responsesJSON) {
+              theResponses = JSON.parse(theApp.responsesJSON);
+            }
+
+            res.render('org/show-application', {
+              title: 'Applications',
+              app: theApp,
+              responses: theResponses
+            });
+          } else {
+            console.log(err);
+            res.send(500);
+          }
+        });
+      } else {
+        res.redirect("/");
+      }
+    });
+  } else {
+    res.redirect('/login');
+  }
 };
 
 /*
