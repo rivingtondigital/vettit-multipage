@@ -56,6 +56,29 @@ exports.newApp = function(req, res) {
 }
 
 /**
+ * POST subdomain.vettit.co/apply
+ */
+exports.createApp = function(req, res) {
+  if (req.isAuthenticated()) {
+    console.log(req);
+
+    var newApp = new App({
+
+    });
+
+    newApp.save(function(err) {
+      if(!err) {
+        console.log('Saved the app')
+      } else {
+        res.redirect("/");
+      }
+    });
+  } else {
+    res.redirect('/');
+  }
+};
+
+/**
  * GET /orgs/new
  */
 exports.newOrg = function(req, res) {

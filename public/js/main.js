@@ -28,8 +28,37 @@ $(function() {
       $('form').submit();
     });
   } else if($('#fbTemplate').val()) {
-    var fbTemplate = document.getElementById('fbTemplate');
-    var formRender = $('.render-form').formRender({formData: fbTemplate.value});
+    var fbTemplate = document.getElementById('fbTemplate').value;
+    var parsed = JSON.parse(fbTemplate);
+
+    var renderDefaults = {
+      container: false,
+      formData: parsed,
+      dataType: 'json',
+      render: true
+    }
+
+    var formRender = $('.render-form').formRender(renderDefaults);
+    $('.btn-app-save').click(function(e) {
+      e.preventDefault();
+      var elements = $('.render-form :input');
+      var responses = [];
+
+      for(var i = 0; i < elements.length; i++) {
+        var response = {};
+        response.question = $(elements[i]).prev().text()
+
+        if(!($(elements[i]).is('select'))) {
+          response.answer = $(elements[i]).val();
+        } else {
+          response.answer = $(elements[i]).find('option:selected').text();
+        }
+        responses.push(response);
+      }
+
+      $('#surveyResponses').val(JSON.stringify(responses));
+      $('form').submit();
+    });
   }
 
 });
