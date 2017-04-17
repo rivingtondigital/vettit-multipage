@@ -101,7 +101,8 @@ exports.signupPost = function(req, res, next) {
     user = new User({
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      admin: true
     });
     user.save(function(err) {
       req.logIn(user, function(err) {

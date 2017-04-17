@@ -93,7 +93,7 @@ app.get('/unlink/:provider', userController.ensureAuthenticated, userController.
 app.get('/s/:subdomain', orgController.showOrg);
 app.get('/s/:subdomain/apply', orgController.newApp);
 app.post('/s/:subdomain/apply', orgController.createApp);
-//app.get('/s/:subdomain/status', orgController.getStatus);
+app.get('/s/:subdomain/status', orgController.appStatus);
 app.get('/orgs/new', orgController.newOrg);
 app.get('/orgs/:id/edit', orgController.editOrg);
 app.post('/orgs/new', orgController.createOrg);

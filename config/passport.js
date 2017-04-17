@@ -75,7 +75,8 @@ passport.use(new FacebookStrategy({
             gender: profile._json.gender,
             location: profile._json.location && profile._json.location.name,
             picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
-            facebook: profile.id
+            facebook: profile.id,
+            admin:false
           });
           newUser.save(function(err) {
             done(err, newUser);

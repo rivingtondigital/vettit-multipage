@@ -1,0 +1,21 @@
+<section id="content" class="content-alt">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h4>{{org.name}}</h4>
+            </div>
+
+            <div class="card-body card-padding">
+              {{#if app.reviewed}}
+                {{#if app.accepted}}
+                  <p>Thank you for your application. We've approved your application and will follow-up shortly over e-mail.</p>
+                {{else}}
+                  <p>Unfortunately your application was rejected.</p>
+                {{/if}}
+              {{else}}
+                <p>Thank you for your application. We haven't yet reviewed it. Stay tuned!</p>
+              {{/if}}
+            </div>
+        </div>
+    </div>
+</section>

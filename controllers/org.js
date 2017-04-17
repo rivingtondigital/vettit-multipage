@@ -28,6 +28,34 @@ exports.showOrg = function(req, res) {
 };
 
 /**
+ * GET subdomain.vettit.co/status
+ */
+exports.appStatus = function(req, res) {
+  console.log("APPLICATION STATUS");
+
+  Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
+    if(theOrg && !req.isAuthenticated()) {
+      res.redirect("/")
+    } else if(theOrg) {
+      //Check to see if there is an application in progress for this user
+      Application.findOne({org: theOrg._id, user: req.user._id}, function(err, theApp) {
+        if(!theApp) {
+          res.redirect('/apply');
+        } else {
+          res.render('org/status', {
+            org: theOrg,
+            app: theApp,
+            layout: 'main'
+          });
+        }
+      });
+    } else {
+      res.send(404);
+    }
+  })
+};
+
+/**
  * GET subdomain.vettit.co/apply
  */
 exports.newApp = function(req, res) {
@@ -59,35 +87,55 @@ exports.newApp = function(req, res) {
  * POST subdomain.vettit.co/apply
  */
 exports.createApp = function(req, res) {
-  if (req.isAuthenticated()) {
-    console.log(req);
+  console.log(req.body);
 
-    var newApp = new App({
+  Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
+    if(theOrg && !req.isAuthenticated()) {
+      res.redirect('/');
+    } else if(theOrg) {
+      //Check to see if there is an application in progress for this user
+      Application.findOne({org: theOrg._id, user: req.user._id}, function(err, theApp) {
+        if(!theApp) {
+          theApp = new Application();
+          theApp.org = theOrg;
+          theApp.user = req.user;
+          theApp.reviewed = false;
+          theApp.accepted = false;
 
-    });
-
-    newApp.save(function(err) {
-      if(!err) {
-        console.log('Saved the app')
-      } else {
-        res.redirect("/");
-      }
-    });
-  } else {
-    res.redirect('/');
-  }
+          theApp.save(function(err) {
+            if(!err) {
+              res.redirect("/status");
+            } else {
+              console.log(err);
+              res.redirect('/apply');
+            }
+          })
+        } else {
+          res.redirect('/status');
+        }
+      });
+    } else {
+      res.send(404);
+    }
+  })
 };
 
 /**
  * GET /orgs/new
  */
 exports.newOrg = function(req, res) {
+  console.log(req.user);
   if (req.isAuthenticated()) {
-    res.render('org/create-org', {
-      title: 'New Organization'
-    });
+    console.log(req.user);
+    if(req.user.admin) {
+      res.render('org/create-org', {
+        title: 'New Organization'
+      });
+    } else {
+      res.redirect('/');
+    }
   } else {
-    res.redirect('/login');
+    res.redirect('/');
   }
 };
 

@@ -31,7 +31,11 @@
                           </li>
 
                           <li class="hi-logo hidden-xs">
-                              <a href="/">Vettit</a>
+                            {{#if org}}
+                              <a href="/">{{org.name}} - VETTIT</a>
+                            {{else}}
+                              <a href="/">VETTIT</a>
+                            {{/if}}
                           </li>
                       </ul>
 
@@ -40,9 +44,13 @@
                     <li {{#is title "Home"}} class="active"{{/is}}><a href="/">Home</a></li>
                     {{#if user}}
                       {{#if user.org}}
-                        <li {{#is title "Manage Organization"}} class="active"{{/is}}><a href='/orgs/{{user.org}}/edit'>Manage Organization</a></li>
+                        {{#if user.admin}}
+                          <li {{#is title "Manage Organization"}} class="active"{{/is}}><a href='/orgs/{{user.org}}/edit'>Manage Organization</a></li>
+                        {{/if}}
                       {{else}}
-                        <li {{#is title "New Organization"}} class="active"{{/is}}><a href='/orgs/new'>Setup Organization</a></li>
+                        {{#if user.admin}}
+                          <li {{#is title "New Organization"}} class="active"{{/is}}><a href='/orgs/new'>Setup Organization</a></li>
+                        {{/if}}
                       {{/if}}
                     {{/if}}
 
