@@ -1,7 +1,7 @@
 $(function() {
   // Your custom JavaScript goes here
   var formData = "";
-  if($('#org-survey')) {
+  if($('#org-survey').val()) {
     if($('#org-survey').val().length) {
       formData = JSON.parse($('#org-survey').val());
     }
@@ -27,7 +27,7 @@ $(function() {
       $('.build-wrap').remove();
       $('form').submit();
     });
-  } else if($('.render-form')) {
+  } else if($('#fbTemplate').val()) {
     var fbTemplate = document.getElementById('fb-template');
     var formRender = $('.render-form').formRender({formData: fbTemplate.value});
   }
