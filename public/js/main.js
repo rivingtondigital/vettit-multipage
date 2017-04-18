@@ -41,7 +41,7 @@ $(function() {
     var formRender = $('.render-form').formRender(renderDefaults);
     $('.btn-app-save').click(function(e) {
       e.preventDefault();
-      var elements = $('.render-form :input');
+      var elements = $('.form_control');
       var responses = [];
 
       for(var i = 0; i < elements.length; i++) {
@@ -49,7 +49,12 @@ $(function() {
         response.question = $(elements[i]).prev().text()
 
         if(!($(elements[i]).is('select'))) {
-          response.answer = $(elements[i]).val();
+          var selectedElements = $(elements[i]).find(":selected");
+          if(selectedElements && selectedElements.length) {
+            response.answer = $(selectedElements[0]).text();
+          } else {
+            response.answer = "";
+          }
         } else {
           response.answer = $(elements[i]).find('option:selected').text();
         }
