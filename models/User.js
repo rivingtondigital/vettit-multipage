@@ -25,6 +25,9 @@ var userSchema = new mongoose.Schema({
   github: String,
   vk: String,
   admin: Boolean,
+  link: String,
+  birthday: String,
+  age_range: String,
   org: {type: mongoose.Schema.Types.ObjectId, ref: 'Org'}
 }, schemaOptions);
 

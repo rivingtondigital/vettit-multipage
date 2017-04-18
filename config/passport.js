@@ -38,11 +38,10 @@ passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_ID,
   clientSecret: process.env.FACEBOOK_SECRET,
   callbackURL: '/auth/facebook/callback',
-  profileFields: ['name', 'email', 'gender', 'location'],
+  profileFields: ['name', 'email', 'gender', 'location', 'link', 'birthday', 'age_range'],
   passReqToCallback: true
 }, function(req, accessToken, refreshToken, profile, done) {
   if (req.user) {
-    console.log(JSON.stringify(profile));
     User.findOne({ facebook: profile.id }, function(err, user) {
       if (user) {
         req.flash('error', { msg: 'There is already an existing account linked with Facebook that belongs to you.' });
@@ -53,6 +52,9 @@ passport.use(new FacebookStrategy({
           user.gender = user.gender || profile._json.gender;
           user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
           user.facebook = profile.id;
+          user.link = user.link || profile.link;
+          user.birthday = user.birthday || profile.birthday;
+          user.age_range = user.age_range || profile.age_range
           user.save(function(err) {
             req.flash('success', { msg: 'Your Facebook account has been linked.' });
             done(err, user);
