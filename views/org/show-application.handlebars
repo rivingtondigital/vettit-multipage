@@ -40,13 +40,21 @@
                                           <dd><a href="{{app.user.link}}">Click Here</a></dd>
                                         </dl>
                                         <dl class="dl-horizontal">
-                                          <dt>Age Range</dt>
-                                          <dd>{{app.user.age_range}}</dd>
+                                          <dt>Gender</dt>
+                                          <dd>{{app.user.gender}}</dd>
                                         </dl>
-                                        <dl class="dl-horizontal">
-                                          <dt>Birthday</dt>
-                                          <dd>{{app.user.birthday}}</dd>
-                                        </dl>
+                                        {{#if app.user.age_range}}
+                                          <dl class="dl-horizontal">
+                                            <dt>Age Range</dt>
+                                            <dd>{{app.user.age_range}}</dd>
+                                          </dl>
+                                        {{/if}}
+                                        {{#if app.user.birthday}}
+                                          <dl class="dl-horizontal">
+                                            <dt>Birthday</dt>
+                                            <dd>{{app.user.birthday}}</dd>
+                                          </dl>
+                                        {{/if}}
                                     </div>
                                 </div>
                             </div>
