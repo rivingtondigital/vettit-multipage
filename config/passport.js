@@ -42,6 +42,7 @@ passport.use(new FacebookStrategy({
   passReqToCallback: true
 }, function(req, accessToken, refreshToken, profile, done) {
   if (req.user) {
+    console.log(JSON.stringify(profile));
     User.findOne({ facebook: profile.id }, function(err, user) {
       if (user) {
         req.flash('error', { msg: 'There is already an existing account linked with Facebook that belongs to you.' });
