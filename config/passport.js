@@ -54,17 +54,17 @@ passport.use(new FacebookStrategy({
           user.gender = user.gender || profile._json.gender;
           user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
           user.facebook = profile.id;
-          user.link = user.link || profile.link;
-          user.birthday = user.birthday || profile.birthday;
-          user.age_range = user.age_range || profile.age_range
+          user.link = user.link || profile._json.link;
+          user.birthday = user.birthday || profile._json.birthday;
+          user.age_range = user.age_range || profile._json.age_range
 
-          if(profile.age_range) {
-            if(profile.age_range.min && !profile.age_range.max) {
-              user.age_range = profile.age_range.min + " or over";
-            } else if(!profile.age_range.min && profile.age_range.max) {
-              user.age_range = "Under " + profile.age_range.max;
+          if(profile._json.age_range) {
+            if(profile._json.age_range.min && !profile._json.age_range.max) {
+              user.age_range = profile._json.age_range.min + " or over";
+            } else if(!profile._json.age_range.min && profile._json.age_range.max) {
+              user.age_range = "Under " + profile._json.age_range.max;
             } else {
-              user.age_range = profile.age_range.min + " - " + profile.age_range.max;
+              user.age_range = profile._json.age_range.min + " - " + profile._json.age_range.max;
             }
           }
 
@@ -92,18 +92,18 @@ passport.use(new FacebookStrategy({
             location: profile._json.location && profile._json.location.name,
             picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
             facebook: profile.id,
-            link: profile.link,
-            birthday: profile.birthday,
+            link: profile._json.link,
+            birthday: profile._json.birthday,
             admin:false
           });
 
-          if(profile.age_range) {
-            if(profile.age_range.min && !profile.age_range.max) {
-              newUser.age_range = profile.age_range.min + " or over";
-            } else if(!profile.age_range.min && profile.age_range.max) {
-              newUser.age_range = "Under " + profile.age_range.max;
+          if(profile._json.age_range) {
+            if(profile._json.age_range.min && !profile._json.age_range.max) {
+              newUser.age_range = profile._json.age_range.min + " or over";
+            } else if(!profile._json.age_range.min && profile._json.age_range.max) {
+              newUser.age_range = "Under " + profile._json.age_range.max;
             } else {
-              newUser.age_range = profile.age_range.min + " - " + profile.age_range.max;
+              newUser.age_range = profile._json.age_range.min + " - " + profile._json.age_range.max;
             }
           }
 
