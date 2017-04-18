@@ -76,6 +76,7 @@ exports.createApp = function(req, res) {
           theApp.user = req.user;
           theApp.reviewed = false;
           theApp.accepted = false;
+          theApp.responsesJSON = req.body.surveyResponses;
 
           theApp.save(function(err) {
             if(!err) {
