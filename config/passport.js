@@ -83,9 +83,19 @@ passport.use(new FacebookStrategy({
             facebook: profile.id,
             link: profile.link,
             birthday: profile.birthday,
-            age_range: profile.age_range,
             admin:false
           });
+
+          if(profile.age_range) {
+            if(profile.age_range.min && !profile.age_range.max) {
+                newUser.age_range = profile.age_range.min + " or over";
+            } else if(!profile.age_range.min && profile.age_range.max) {
+              newUser.age_range = "Under " + profile.age_range.max;
+            } else {
+              newUser.age_range = profile.age_range.min + " - " + profile.age_range.max;
+            }
+          }
+
           newUser.save(function(err) {
             done(err, newUser);
           });
