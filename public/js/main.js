@@ -41,7 +41,7 @@ $(function() {
     var formRender = $('.render-form').formRender(renderDefaults);
     $('.btn-app-save').click(function(e) {
       e.preventDefault();
-      var elements = $('.form_control');
+      var elements = $('.form-control');
       var responses = [];
 
       for(var i = 0; i < elements.length; i++) {
