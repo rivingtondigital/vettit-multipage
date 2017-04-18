@@ -13,7 +13,8 @@ $(function() {
         'date',
         'checkbox-group',
         'button',
-        'hidden'
+        'hidden',
+        'radio-group'
       ],
       dataType: 'json',
       showActionButtons: false,
