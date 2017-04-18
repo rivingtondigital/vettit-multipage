@@ -57,6 +57,17 @@ passport.use(new FacebookStrategy({
           user.link = user.link || profile.link;
           user.birthday = user.birthday || profile.birthday;
           user.age_range = user.age_range || profile.age_range
+
+          if(profile.age_range) {
+            if(profile.age_range.min && !profile.age_range.max) {
+              user.age_range = profile.age_range.min + " or over";
+            } else if(!profile.age_range.min && profile.age_range.max) {
+              user.age_range = "Under " + profile.age_range.max;
+            } else {
+              user.age_range = profile.age_range.min + " - " + profile.age_range.max;
+            }
+          }
+
           user.save(function(err) {
             req.flash('success', { msg: 'Your Facebook account has been linked.' });
             done(err, user);
@@ -88,7 +99,7 @@ passport.use(new FacebookStrategy({
 
           if(profile.age_range) {
             if(profile.age_range.min && !profile.age_range.max) {
-                newUser.age_range = profile.age_range.min + " or over";
+              newUser.age_range = profile.age_range.min + " or over";
             } else if(!profile.age_range.min && profile.age_range.max) {
               newUser.age_range = "Under " + profile.age_range.max;
             } else {
