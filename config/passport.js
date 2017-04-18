@@ -81,9 +81,9 @@ passport.use(new FacebookStrategy({
             location: profile._json.location && profile._json.location.name,
             picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
             facebook: profile.id,
-            link = profile.link,
-            birthday = profile.birthday,
-            age_range = profile.age_range,
+            link: profile.link,
+            birthday: profile.birthday,
+            age_range: profile.age_range,
             admin:false
           });
           newUser.save(function(err) {
