@@ -89,6 +89,7 @@ app.post('/forgot', userController.forgotPost);
 app.get('/reset/:token', userController.resetGet);
 app.post('/reset/:token', userController.resetPost);
 app.get('/logout', userController.logout);
+app.get('/s/:subdomain/logout', userController.logout);
 app.get('/unlink/:provider', userController.ensureAuthenticated, userController.unlink);
 
 app.get('/s/:subdomain', orgController.showOrg);
@@ -97,13 +98,14 @@ app.post('/s/:subdomain/apply', appController.createApp);
 app.get('/s/:subdomain/status', appController.appStatus);
 
 app.get('/orgs/:id/applications', appController.listApps);
+app.get('/orgs/:id/applications/filter/:filter', appController.listApps);
 app.get('/orgs/:id/applications/:app_id', appController.getApplication);
-app.post('/orgs/:id/applications/:app_id', appController.updateApplication);
+app.get('/orgs/:id/applications/:app_id/review', appController.updateApplication);
 
 app.get('/orgs/new', orgController.newOrg);
 app.get('/orgs/:id/edit', orgController.editOrg);
-app.post('/orgs/new', orgController.createOrg);
 app.post('/orgs/:id/edit', orgController.updateOrg);
+app.post('/orgs/new', orgController.createOrg);
 
 app.get('/s/:subdomain/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
 app.get('/s/:subdomain/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/' }));

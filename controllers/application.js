@@ -103,23 +103,52 @@ exports.listApps = function(req, res) {
   if (req.isAuthenticated()) {
     User.findById(req.user.id, function(err, theUser) {
       if(theUser.org == req.params.id) {
-        Application.find({'org': req.params.id}).populate('user').exec(function(err, theApps) {
-          if(!err) {
-            console.log(theApps);
-            res.render('org/application-list', {
-              title: 'Applications',
-              orgId: req.params.id,
-              apps: theApps
+        Org.findById(req.params.id, function(err, theOrg) {
+            if(!err) {
+                //Use query string to find out how we should filter the list
+                var q = {};
+                var all = false;
+                var toReview = false
+                var accepted = false;
+                var rejected = false;
+                if(req.params.filter == "all") {
+                  all = true;
+                  q = {'org': req.params.id};
+                } else if(req.params.filter == "accepted") {
+                  accepted = true;
+                  q = {'org': req.params.id, 'accepted': true};
+                } else if(req.params.filter == "rejected") {
+                  rejected = true;
+                  q = {'org': req.params.id, 'accepted': false, 'reviewed': true};
+                } else {
+                  toReview = true;
+                  q = {'org': req.params.id, 'reviewed': false};
+                }
+
+                Application.find(q).populate('user').exec(function(err, theApps) {
+                  if(!err) {
+                    res.render('org/application-list', {
+                      title: 'Review Applications',
+                      orgId: req.params.id,
+                      apps: theApps,
+                      filterAll: all,
+                      filterAccepted: accepted,
+                      filterRejected: rejected,
+                      filterReview: toReview,
+                      empty: theApps.length == 0,
+                      subdomain: theOrg.subdomain
+                    });
+                  } else {
+                    console.log(err);
+                    res.send(500);
+                  }
+                });
+              } else {
+                res.redirect("/");
+              }
             });
-          } else {
-            console.log(err);
-            res.send(500);
           }
         });
-      } else {
-        res.redirect("/");
-      }
-    });
   } else {
     res.redirect('/login');
   }
@@ -134,7 +163,6 @@ exports.getApplication = function(req, res) {
       if(theUser.org == req.params.id) {
         Application.findById(req.params.app_id).populate('user').exec(function(err, theApp) {
           if(!err) {
-            console.log(theApp);
             var theResponses = [];
             if(theApp.responsesJSON) {
               theResponses = JSON.parse(theApp.responsesJSON);
@@ -160,8 +188,48 @@ exports.getApplication = function(req, res) {
 };
 
 /*
- * POST /orgs/:id/applications/:app_id
+ * GET /orgs/:id/applications/:app_id/review?approved=true/false
  */
 exports.updateApplication = function(req, res) {
-  res.redirect("/");
+  console.log("--> Updating application")
+  if (req.isAuthenticated()) {
+    User.findById(req.user.id, function(err, theUser) {
+      if(theUser.org == req.params.id) {
+        Application.findById(req.params.app_id).populate('user').exec(function(err, theApp) {
+          if(!err) {
+            console.log("--> Found app, no error")
+            if(req.query.approved != undefined) {
+              if(req.query.approved) {
+                theApp.accepted = true;
+                theApp.reviewed = true;
+              } else {
+                theApp.accepted = false;
+                theApp.reviewed = true;
+              }
+
+              theApp.save(function(err) {
+                if(err) {
+                  console.log(err);
+                  res.send(500);
+                } else {
+                  console.log("Set approval state on application " + req.params.app_id +" to " + req.query.approved);
+                  res.redirect("/orgs/"+req.params.id+"/applications/");
+                }
+              });
+            } else {
+              //No query parameter for redirect
+              res.redirect("/orgs/"+req.params.id+"/applications/"+req.params.app_id);
+            }
+          } else {
+            console.log(err);
+            res.send(500);
+          }
+        });
+      } else {
+        res.redirect("/");
+      }
+    });
+  } else {
+    res.redirect('/login');
+  }
 };

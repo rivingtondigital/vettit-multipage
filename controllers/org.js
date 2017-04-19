@@ -95,7 +95,7 @@ exports.editOrg = function(req, res) {
           if(!err) {
             console.log(org);
             res.render('org/edit-org', {
-              title: 'Manage Organization',
+              title: 'Organization Settings',
               org: org
             });
           } else {

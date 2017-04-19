@@ -72,8 +72,12 @@
                                         </dl>
                                       {{/each}}
                                     </div>
-
                                 </div>
+                            </div>
+
+                            <div class="pmb-block">
+                              <a href="/orgs/{{app.org}}/applications/{{app._id}}/review?approved=true" class="btn btn-large btn-success">Approve</a>
+                              <a href="/orgs/{{app.org}}/applications/{{app._id}}/review?approved=false" class="btn btn-large btn-danger">Reject</a>
                             </div>
                         </div>
                     </div>

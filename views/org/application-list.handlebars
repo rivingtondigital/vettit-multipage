@@ -2,14 +2,28 @@
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <h2>Applications</h2>
+              <h2>
+                {{#if filterReview}}Applications to Review{{/if}}
+                {{#if filterAll}}All Applications{{/if}}
+                {{#if filterAccepted}}Accepted Applications{{/if}}
+                {{#if filterRejected}}Rejected Applications{{/if}}
+              </h2>
             </div>
 
             <div class="card-body card-padding">
+              {{#if filterReview}}<p>Filter by: <a href="/orgs/{{orgId}}/applications/filter/accepted">Accepted</a> - <a href="/orgs/{{orgId}}/applications/filter/rejected">Rejected</a> - <a href="/orgs/{{orgId}}/applications/filter/all">All</a></p>{{/if}}
+              {{#if filterAll}}<p>Filter by: <a href="/orgs/{{orgId}}/applications/filter/accepted">Accepted</a> - <a href="/orgs/{{orgId}}/applications/filter/rejected">Rejected</a> - <a href="/orgs/{{orgId}}/applications">Review</a></p>{{/if}}
+              {{#if filterAccepted}}<p>Filter by: <a href="/orgs/{{orgId}}/applications/filter/rejected">Rejected</a> - <a href="/orgs/{{orgId}}/applications">Review</a> - <a href="/orgs/{{orgId}}/applications/filter/all">All</a></p>{{/if}}
+              {{#if filterRejected}}<p>Filter by: <a href="/orgs/{{orgId}}/applications/">Review</a> - <a href="/orgs/{{orgId}}/applications/filter/all">All</a> - <a href="/orgs/{{orgId}}/applications/filter/accepted">Accepted</a></p>{{/if}}
+
               <ul>
-                {{#each apps}}
-                  <li><a href='./applications/{{this._id}}/'>{{this.user.name}}</a></li>
-                {{/each}}
+                {{#if empty}}
+                  No applications to display. Make sure to send prospective applicants to your organization's portal: http://{{subdomain}}.vettit.co/
+                {{else}}
+                  {{#each apps}}
+                    <li><a href='/orgs/{{this.org}}/applications/{{this._id}}/'>{{this.user.name}}</a></li>
+                  {{/each}}
+                {{/if}}
               </ul>
             </div>
         </div>

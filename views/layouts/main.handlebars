@@ -43,11 +43,11 @@
 
             <nav class="ha-menu">
                 <ul>
-                    <li {{#is title "Home"}} class="active"{{/is}}><a href="/">Home</a></li>
+                    <li {{#is title "Review Applications"}} class="active"{{/is}}><a href="/">Review Applications</a></li>
                     {{#if user}}
                       {{#if user.org}}
                         {{#if user.admin}}
-                          <li {{#is title "Manage Organization"}} class="active"{{/is}}><a href='/orgs/{{user.org}}/edit'>Manage Organization</a></li>
+                          <li {{#is title "Organization Settings"}} class="active"{{/is}}><a href='/orgs/{{user.org}}/edit'>Organization Settings</a></li>
                         {{/if}}
                       {{else}}
                         {{#if user.admin}}

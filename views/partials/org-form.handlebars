@@ -8,9 +8,10 @@
         <input type="text" name="orgTagline" class="form-control input-sm" id="org-tagline" placeholder="Tagline" value="{{org.tagline}}">
     </div>
     <div class="form-group fg-line">
-        <label for="org-subdomain">Subdomain</label>
+        <label for="org-subdomain">Subdmain (YOUR_SUBDOMAIN.vettit.co) where prospective applicants will be able to submit themselves for vetting.</label>
         <input type="text" name="orgSubdomain" class="form-control input-sm" id="org-subdomain" placeholder="subdomain" value="{{org.subdomain}}">
     </div>
+    {{#if 0}}
     <div class="form-group fg-line">
         <label for="org-location">Location</label>
         <input type="text" name="orgLocation" class="form-control input-sm" id="org-location" placeholder="Location (City, State, Country)" value='{{org.location}}'>
@@ -27,6 +28,7 @@
         <label for="org-icon">Icon Image URL (400x400px)</label>
         <input type="text" name="orgIcon" class="form-control input-sm" id="org-icon" placeholder="Icon Image URL" value='{{org.iconImg}}'>
     </div>
+    {{/if}}
     <div class="form-group fg-line">
         <label for="org-website">Website</label>
         <input type="text" name="orgWebsite" class="form-control input-sm" id="org-website" placeholder="Website URL" value='{{org.website}}'>
