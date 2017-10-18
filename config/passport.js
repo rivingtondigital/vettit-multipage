@@ -117,6 +117,7 @@ passport.use(new FacebookStrategy({
 }));
 
 // Sign in with Twitter
+/*
 passport.use(new TwitterStrategy({
   consumerKey: process.env.TWITTER_KEY,
   consumerSecret: process.env.TWITTER_SECRET,
@@ -164,3 +165,4 @@ passport.use(new TwitterStrategy({
     });
   }
 }));
+*/
