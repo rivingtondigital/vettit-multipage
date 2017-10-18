@@ -15,7 +15,7 @@ var passport = require('passport');
 var wildcardSubdomains = require('wildcard-subdomains')
 
 // Load environment variables from .env file
-dotenv.load();
+//dotenv.load();
 
 // Controllers
 var HomeController = require('./controllers/home');
@@ -30,7 +30,7 @@ require('./config/passport');
 var app = express();
 
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGOHQ_URL);
 mongoose.connection.on('error', function() {
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.');
   process.exit(1);
