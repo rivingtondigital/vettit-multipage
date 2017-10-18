@@ -3,7 +3,7 @@ var Org = require('../models/Org');
 var Application = require('../models/Application');
 
 /**
- * GET subdomain.vettit.co/status
+ * GET subdomain.volunteercheck.co/status
  */
 exports.appStatus = function(req, res) {
   console.log("APPLICATION STATUS");
@@ -31,7 +31,7 @@ exports.appStatus = function(req, res) {
 };
 
 /**
- * GET subdomain.vettit.co/apply
+ * GET subdomain.volunteercheck.co/apply
  */
 exports.newApp = function(req, res) {
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
@@ -59,7 +59,7 @@ exports.newApp = function(req, res) {
 }
 
 /**
- * POST subdomain.vettit.co/apply
+ * POST subdomain.volunteercheck.co/apply
  */
 exports.createApp = function(req, res) {
   console.log(req.body);

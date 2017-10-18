@@ -3,7 +3,7 @@ var Org = require('../models/Org');
 var Application = require('../models/Application');
 
 /**
- * GET subdomain.vettit.co/
+ * GET subdomain.volunteercheck.co/
  */
 exports.showOrg = function(req, res) {
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {

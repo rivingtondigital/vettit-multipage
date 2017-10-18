@@ -18,7 +18,7 @@
 
               <ul>
                 {{#if empty}}
-                  No applications to display. Make sure to send prospective applicants to your organization's portal: http://{{subdomain}}.vettit.co/
+                  No applications to display. Make sure to send prospective applicants to your organization's portal: http://{{subdomain}}.volunteercheck.org/
                 {{else}}
                   {{#each apps}}
                     <li><a href='/orgs/{{this.org}}/applications/{{this._id}}/'>{{this.user.name}}</a></li>
