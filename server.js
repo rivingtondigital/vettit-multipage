@@ -107,7 +107,7 @@ app.get('/orgs/:id/edit', orgController.editOrg);
 app.post('/orgs/:id/edit', orgController.updateOrg);
 app.post('/orgs/new', orgController.createOrg);
 
-app.get('/s/:subdomain/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+app.get('/s/:subdomain/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'], callbackURL: 'https://www.volunteercheck.org/s/:subdomain/auth/facebook/callback' }));
 app.get('/s/:subdomain/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/' }));
 app.get('/s/:subdomain/auth/twitter', passport.authenticate('twitter'));
 app.get('/s/:subdomain/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/' }));
