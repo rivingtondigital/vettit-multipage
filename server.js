@@ -58,7 +58,7 @@ app.use(compression());
 app.use(logger('dev'));
 app.use(wildcardSubdomains({
   namespace: 's',
-  whitelist: ['www', 'app', 'api']
+  whitelist: [ 'app', 'api']
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -74,7 +74,7 @@ app.use(function(req, res, next) {
 });
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', HomeController.index);
+app.get('/s/www', HomeController.index);
 app.get('/contact', contactController.contactGet);
 app.post('/contact', contactController.contactPost);
 app.get('/account', userController.ensureAuthenticated, userController.accountGet);
