@@ -107,12 +107,16 @@ app.get('/orgs/:id/edit', orgController.editOrg);
 app.post('/orgs/:id/edit', orgController.updateOrg);
 app.post('/orgs/new', orgController.createOrg);
 
-app.get('/s/:subdomain/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+app.get('/s/:subdomain/auth/facebook', function(req, res) {
+		res.redirect('/s/www/auth/facebook');
+	},
+	passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+
 app.get('/s/:subdomain/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/' }));
 app.get('/s/:subdomain/auth/twitter', passport.authenticate('twitter'));
 app.get('/s/:subdomain/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/' }));
 
-// Production error handler
+// Production error handler:
 if (app.get('env') === 'production') {
   app.use(function(err, req, res, next) {
     console.error(err.stack);
