@@ -66,7 +66,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(methodOverride('_method'));
-app.use(cookieSession({secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true, cookie: {domain:'.example.com'}}));
+app.use(cookieSession({secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true, cookie: {domain:'.volunteercheck.org'}}));
 //app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true, cookie: {domain:'.example.com'} }));
 app.use(flash());
 app.use(passport.initialize());
