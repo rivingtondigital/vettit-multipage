@@ -155,3 +155,20 @@ exports.updateOrg = function(req, res) {
     res.redirect('/login');
   }
 };
+
+exports.authRedirect = function(req, res) {
+  res.cookie('auth_subdomain', req.params.subdomain, { maxAge: 1000*60*60*24, httpOnly: true });
+  res.redirect('/auth/facebook');
+}
+
+exports.rewriteSubdomain = function(req, res) {
+  var cookieSubdomain = req.cookies['auth_subdomain'];
+  if(cookieSubdomain && cookieSubdomain.length) {
+      console.log("Found subdomain: " + cookieSubdomain);
+      res.clearCookie("auth_subdomain");
+      res.redirect("https://" + cookieSubdomain + ".volunteercheck.org/");
+  } else {
+    console.log("Didn't find a subdomain cookie - Maybe it expired?");
+    res.redirect("/");
+  }
+}
