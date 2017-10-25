@@ -157,9 +157,10 @@ exports.updateOrg = function(req, res) {
 };
 
 exports.authRedirect = function(req, res) {
-  res.cookie('auth_subdomain', req.params.subdomain, { maxAge: 1000*60*60*24, httpOnly: true });
+  console.log("AUTH REDIRECT");
+  res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true });
   res.redirect('/auth/facebook');
-}
+};
 
 exports.rewriteSubdomain = function(req, res) {
   var cookieSubdomain = req.cookies['auth_subdomain'];
@@ -171,4 +172,4 @@ exports.rewriteSubdomain = function(req, res) {
     console.log("Didn't find a subdomain cookie - Maybe it expired?");
     res.redirect("/");
   }
-}
+};

@@ -96,6 +96,7 @@ app.get('/s/:subdomain', orgController.showOrg);
 app.get('/s/:subdomain/apply', appController.newApp);
 app.post('/s/:subdomain/apply', appController.createApp);
 app.get('/s/:subdomain/status', appController.appStatus);
+app.get('/s/:subdomain/auth/facebook', orgController.authRedirect);
 
 app.get('/orgs/:id/applications', appController.listApps);
 app.get('/orgs/:id/applications/filter/:filter', appController.listApps);
@@ -108,7 +109,10 @@ app.post('/orgs/:id/edit', orgController.updateOrg);
 app.post('/orgs/new', orgController.createOrg);
 
 app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/' }));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/auth/rewrite', failureRedirect: '/auth/rewrite' }));
+app.get('/auth/rewrite', orgController.rewriteSubdomain);
+
+
 //app.get('/s/:subdomain/auth/twitter', passport.authenticate('twitter'));
 //app.get('/s/:subdomain/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/' }));
 
