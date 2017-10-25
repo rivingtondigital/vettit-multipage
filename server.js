@@ -69,7 +69,7 @@ app.use(methodOverride('_method'));
 app.use(cookieSession({
     key: 'volunteercheck.sid',
     secret: process.env.SESSION_SECRET,
-    cookie: { domain: '.volunteercheck.org', maxAge: ONE_DAY }
+    cookie: { domain: '.volunteercheck.org'}
   }));
 //app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
 app.use(flash());
