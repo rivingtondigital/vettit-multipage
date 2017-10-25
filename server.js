@@ -14,7 +14,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var wildcardSubdomains = require('wildcard-subdomains')
 var cookieParser = require('cookie-parser');
-
+var cookieSession = require('cookie-session');
 // Load environment variables from .env file
 //dotenv.load();
 
@@ -66,7 +66,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(methodOverride('_method'));
-app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
+app.use(cookieSession({
+    key: 'volunteercheck.sid',
+    secret: process.env.SESSION_SECRET,
+    cookie: { domain: '.volunteercheck.org', maxAge: ONE_DAY }
+  }));
+//app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
