@@ -6,6 +6,8 @@ var Application = require('../models/Application');
  * GET subdomain.volunteercheck.co/
  */
 exports.showOrg = function(req, res) {
+  console.log("SHOW ORG");
+  console.log(req.cookies);
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
     if(theOrg && !req.isAuthenticated()) {
       res.render('landingpage', {
