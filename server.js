@@ -60,6 +60,7 @@ app.use(wildcardSubdomains({
   namespace: 's',
   whitelist: ['www', 'app', 'api']
 }));
+app.use(express.cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
