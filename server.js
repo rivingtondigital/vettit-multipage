@@ -67,6 +67,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(methodOverride('_method'));
 app.use(cookieSession({secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true, cookie: {domain:'.volunteercheck.org'}}));
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+    next();
+});
+
 //app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true, cookie: {domain:'.example.com'} }));
 app.use(flash());
 app.use(passport.initialize());

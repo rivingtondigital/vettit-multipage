@@ -8,6 +8,7 @@ var Application = require('../models/Application');
 exports.showOrg = function(req, res) {
   console.log("SHOW ORG");
   console.log(req.cookies);
+  console.log("Authenticated? " + req.isAuthenticated());
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
     if(theOrg && !req.isAuthenticated()) {
       res.render('landingpage', {
