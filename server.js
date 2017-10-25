@@ -13,6 +13,7 @@ var helpers = require('handlebars-helpers')();
 var mongoose = require('mongoose');
 var passport = require('passport');
 var wildcardSubdomains = require('wildcard-subdomains')
+var cookieParser = require('cookie-parser');
 
 // Load environment variables from .env file
 //dotenv.load();
@@ -60,7 +61,7 @@ app.use(wildcardSubdomains({
   namespace: 's',
   whitelist: ['www', 'app', 'api']
 }));
-app.use(express.cookieParser());
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
