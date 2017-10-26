@@ -8,6 +8,7 @@ var Application = require('../models/Application');
 exports.showOrg = function(req, res) {
   console.log("SHOW ORG");
   console.log(req.cookies);
+  res.clearCookie("session");
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
     if(theOrg && !req.isAuthenticated()) {
       res.render('landingpage', {
@@ -160,7 +161,7 @@ exports.updateOrg = function(req, res) {
 
 exports.authRedirect = function(req, res) {
   console.log("AUTH REDIRECT");
-  res.session = {};
+  res.clearCookie("session");
   res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: 'volunteercheck.org' });
   res.redirect('https://www.volunteercheck.org/auth/facebook');
 };
