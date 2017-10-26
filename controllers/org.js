@@ -42,7 +42,7 @@ exports.newOrg = function(req, res) {
         title: 'New Organization'
       });
     } else {
-      res.redirect('/');
+      res.redirect('/logout');
     }
   } else {
     res.redirect('/');
