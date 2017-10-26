@@ -66,7 +66,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(methodOverride('_method'));
-app.use(cookieSession({key: 'cookiesess.sid', resave: true, saveUninitialized: true, cookie: {domain:'volunteercheck.org'}}));
+app.use(cookieSession({keys: [process.env.SESSION_SECRET], resave: true, saveUninitialized: true, cookie: {signed: false, domain:'volunteercheck.org'}}));
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Origin', req.headers.origin);
