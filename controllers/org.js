@@ -160,7 +160,7 @@ exports.updateOrg = function(req, res) {
 
 exports.authRedirect = function(req, res) {
   console.log("AUTH REDIRECT");
-  res.clearCookie("session");
+  res.session = {};
   res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: 'volunteercheck.org' });
   res.redirect('https://www.volunteercheck.org/auth/facebook');
 };
