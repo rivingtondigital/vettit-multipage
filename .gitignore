@@ -65,3 +65,4 @@ public/js/bundle.js.map
 
 .DS_Store
 ./app/.DS_Store
+secrets.sh

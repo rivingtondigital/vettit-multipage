@@ -6,6 +6,9 @@ var Application = require('../models/Application');
  * GET subdomain.volunteercheck.co/
  */
 exports.showOrg = function(req, res) {
+  console.log("SHOW ORG");
+  console.log(req.cookies);
+  res.clearCookie("session");
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
     if(theOrg && !req.isAuthenticated()) {
       res.render('landingpage', {
@@ -39,7 +42,7 @@ exports.newOrg = function(req, res) {
         title: 'New Organization'
       });
     } else {
-      res.redirect('/');
+      res.redirect('/logout');
     }
   } else {
     res.redirect('/');
@@ -153,5 +156,25 @@ exports.updateOrg = function(req, res) {
     });
   } else {
     res.redirect('/login');
+  }
+};
+
+exports.authRedirect = function(req, res) {
+  console.log("AUTH REDIRECT");
+  res.clearCookie("session");
+  res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: 'volunteercheck.org' });
+  res.redirect('https://www.volunteercheck.org/auth/facebook');
+};
+
+exports.rewriteSubdomain = function(req, res) {
+  console.log(req.cookies);
+  var cookieSubdomain = req.cookies['auth_subdomain'];
+  if(cookieSubdomain && cookieSubdomain.length) {
+      console.log("Found subdomain: " + cookieSubdomain);
+      res.clearCookie("auth_subdomain");
+      res.redirect("https://" + cookieSubdomain + ".volunteercheck.org/");
+  } else {
+    console.log("Didn't find a subdomain cookie - Maybe it expired?");
+    res.redirect("/");
   }
 };

@@ -13,7 +13,8 @@ var helpers = require('handlebars-helpers')();
 var mongoose = require('mongoose');
 var passport = require('passport');
 var wildcardSubdomains = require('wildcard-subdomains')
-
+var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
 // Load environment variables from .env file
 //dotenv.load();
 
@@ -60,11 +61,21 @@ app.use(wildcardSubdomains({
   namespace: 's',
   whitelist: [ 'app', 'api']
 }));
+app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(methodOverride('_method'));
-app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
+//app.use(cookieSession({keys: [process.env.SESSION_SECRET], resave: true, saveUninitialized: true, cookie: {signed: false, domain:'volunteercheck.org'}}));
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+    next();
+});
+
+app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true, cookie: {domain:'.volunteercheck.org'} }));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -96,6 +107,7 @@ app.get('/s/:subdomain', orgController.showOrg);
 app.get('/s/:subdomain/apply', appController.newApp);
 app.post('/s/:subdomain/apply', appController.createApp);
 app.get('/s/:subdomain/status', appController.appStatus);
+app.get('/s/:subdomain/auth/facebook', orgController.authRedirect);
 
 app.get('/orgs/:id/applications', appController.listApps);
 app.get('/orgs/:id/applications/filter/:filter', appController.listApps);
@@ -107,14 +119,13 @@ app.get('/orgs/:id/edit', orgController.editOrg);
 app.post('/orgs/:id/edit', orgController.updateOrg);
 app.post('/orgs/new', orgController.createOrg);
 
-app.get('/s/:subdomain/auth/facebook', function(req, res) {
-		res.redirect('/s/www/auth/facebook');
-	},
-	passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/auth/rewrite', failureRedirect: '/auth/rewrite' }));
+app.get('/auth/rewrite', orgController.rewriteSubdomain);
 
-app.get('/s/:subdomain/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/' }));
-app.get('/s/:subdomain/auth/twitter', passport.authenticate('twitter'));
-app.get('/s/:subdomain/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/' }));
+
+//app.get('/s/:subdomain/auth/twitter', passport.authenticate('twitter'));
+//app.get('/s/:subdomain/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/' }));
 
 // Production error handler:
 if (app.get('env') === 'production') {
