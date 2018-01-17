@@ -1,3 +1,6 @@
+data
+secrets.sh
+
 # Logs
 logs
 *.log
