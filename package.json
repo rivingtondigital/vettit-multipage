@@ -4,7 +4,8 @@
   "description": "My app description",
   "scripts": {
     "deploy": "npm test && git push heroku master",
-    "start": "node server.js"
+    "start": "node server.js",
+    "start-dev": "source secrets.sh && nodemon server.js"
   },
   "dependencies": {
     "async": "^1.5.2",
