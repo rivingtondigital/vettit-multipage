@@ -9,7 +9,7 @@ exports.index = function(req, res) {
       res.redirect('/orgs/new');
     }
   } else {
-		res.render('home', {
+    res.render('home', {
       layout: 'anon-landing'
     })
   }

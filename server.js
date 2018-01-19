@@ -14,7 +14,6 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var wildcardSubdomains = require('wildcard-subdomains')
 var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
 var MongoStore = require('connect-mongo')(session);
 // Load environment variables from .env file
 //dotenv.load();
