@@ -14,7 +14,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var wildcardSubdomains = require('wildcard-subdomains')
 var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+var MongoStore = require('connect-mongo')(session);
 // Load environment variables from .env file
 //dotenv.load();
 
@@ -27,7 +27,6 @@ var contactController = require('./controllers/contact');
 
 // Passport OAuth strategies
 require('./config/passport');
-
 var app = express();
 
 
@@ -59,14 +58,13 @@ app.use(compression());
 app.use(logger('dev'));
 app.use(wildcardSubdomains({
   namespace: 's',
-  whitelist: [ 'app', 'api']
+  whitelist: ['www', 'app', 'api']
 }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(methodOverride('_method'));
-//app.use(cookieSession({keys: [process.env.SESSION_SECRET], resave: true, saveUninitialized: true, cookie: {signed: false, domain:'volunteercheck.org'}}));
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -75,7 +73,12 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true, cookie: {domain:'.volunteercheck.org'} }));
+app.use(session({
+	secret: process.env.SESSION_SECRET,
+	resave: true,
+	saveUninitialized: true,
+	store: new MongoStore({mongooseConnection: mongoose.connection})
+}));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -85,7 +88,7 @@ app.use(function(req, res, next) {
 });
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/s/www', HomeController.index);
+app.get('/', HomeController.index);
 app.get('/contact', contactController.contactGet);
 app.post('/contact', contactController.contactPost);
 app.get('/account', userController.ensureAuthenticated, userController.accountGet);

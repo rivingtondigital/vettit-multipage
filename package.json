@@ -4,15 +4,16 @@
   "description": "My app description",
   "scripts": {
     "deploy": "npm test && git push heroku master",
-    "start": "node server.js"
+    "start": "node server.js",
+    "start-dev": "source secrets.sh && nodemon server.js"
   },
   "dependencies": {
     "async": "^1.5.2",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.15.1",
     "compression": "^1.6.2",
+    "connect-mongo": "^2.0.1",
     "cookie-parser": "^1.4.3",
-    "cookie-session": "^2.0.0-beta.3",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "express-flash": "0.0.2",
@@ -26,7 +27,7 @@
     "mongoose": "^4.4.8",
     "morgan": "^1.7.0",
     "nodemailer": "^2.3.0",
-    "passport": "^0.3.2",
+    "passport": "^0.4.0",
     "passport-facebook": "^2.1.0",
     "passport-google-oauth": "^1.0.0",
     "passport-local": "^1.0.0",

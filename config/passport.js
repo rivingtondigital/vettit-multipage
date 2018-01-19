@@ -27,7 +27,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
     user.comparePassword(password, function(err, isMatch) {
       if (!isMatch) {
         return done(null, false, { msg: 'Invalid email or password' });
-      }
+			}
       return done(null, user);
     });
   });
