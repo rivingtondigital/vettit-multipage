@@ -2,9 +2,6 @@
  * GET /
  */
 exports.index = function(req, res) {
-  console.log("SHOW HOME");
-  console.log(req.cookies);
-
   if(req.isAuthenticated()) {
     if(req.user.org) {
       res.redirect('/orgs/'+req.user.org+"/applications");
@@ -12,7 +9,7 @@ exports.index = function(req, res) {
       res.redirect('/orgs/new');
     }
   } else {
-    res.render('home', {
+		res.render('home', {
       layout: 'anon-landing'
     })
   }

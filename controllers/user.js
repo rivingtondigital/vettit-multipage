@@ -50,7 +50,9 @@ exports.loginPost = function(req, res, next) {
       return res.redirect('/login')
     }
     req.logIn(user, function(err) {
-      res.redirect('/');
+      req.session.save(function(err) {
+        res.redirect('/');
+      });
     });
   })(req, res, next);
 };
@@ -195,7 +197,7 @@ exports.unlink = function(req, res, next) {
         user.vk = undefined;
         break;
       case 'github':
-          user.github = undefined;
+        user.github = undefined;
         break;
       default:
         req.flash('error', { msg: 'Invalid OAuth Provider' });
