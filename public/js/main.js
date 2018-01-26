@@ -21,6 +21,17 @@ $(function() {
       formData: formData
     };
 
+    /*
+    jQuery(function($) {
+        var editor = document.getElementById('build-wrap');
+        $(editor).formBuilder(options);
+    });
+    */
+
+    var formBuilder = $('.build-wrap').formBuilder(options);
+
+    debugger;
+    /*
     var formBuilder = $('.build-wrap').formBuilder(options).data('formBuilder');
     $('.btn-org-save').click(function(e) {
       e.preventDefault();
@@ -28,6 +39,7 @@ $(function() {
       $('.build-wrap').remove();
       $('form').submit();
     });
+  */
   } else if($('#fbTemplate').val()) {
     var fbTemplate = document.getElementById('fbTemplate').value;
     var parsed = JSON.parse(fbTemplate);

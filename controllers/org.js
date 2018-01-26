@@ -2,6 +2,9 @@ var User = require('../models/User');
 var Org = require('../models/Org');
 var Application = require('../models/Application');
 
+var config = require('../config/dev_config');
+console.log(config.domain);
+
 /**
  * GET subdomain.volunteercheck.co/
  */
@@ -93,6 +96,7 @@ exports.createOrg = function(req, res) {
 exports.editOrg = function(req, res) {
   if (req.isAuthenticated()) {
     User.findById(req.user.id, function(err, theUser) {
+      console.log(theUser.org, req.params.id);
       if(theUser.org == req.params.id) {
         Org.findById(req.params.id, function(err, org) {
           if(!err) {
@@ -162,8 +166,8 @@ exports.updateOrg = function(req, res) {
 exports.authRedirect = function(req, res) {
   console.log("AUTH REDIRECT");
   res.clearCookie("session");
-  res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: 'volunteercheck.org' });
-  res.redirect('https://www.volunteercheck.org/auth/facebook');
+  res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: config.domain });
+  res.redirect('https://'+ config.domain +'/auth/facebook');
 };
 
 exports.rewriteSubdomain = function(req, res) {
@@ -172,7 +176,7 @@ exports.rewriteSubdomain = function(req, res) {
   if(cookieSubdomain && cookieSubdomain.length) {
       console.log("Found subdomain: " + cookieSubdomain);
       res.clearCookie("auth_subdomain");
-      res.redirect("https://" + cookieSubdomain + ".volunteercheck.org/");
+      res.redirect("https://" + cookieSubdomain + "." + config.domain);
   } else {
     console.log("Didn't find a subdomain cookie - Maybe it expired?");
     res.redirect("/");
