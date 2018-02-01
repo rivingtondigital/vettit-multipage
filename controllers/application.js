@@ -108,7 +108,7 @@ exports.listApps = function(req, res) {
                 //Use query string to find out how we should filter the list
                 var q = {};
                 var all = false;
-                var toReview = false
+                var toReview = false;
                 var accepted = false;
                 var rejected = false;
                 if(req.params.filter == "all") {

@@ -11,13 +11,21 @@
     <title>Volunteer with {{org.name}}</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="../../css/org/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/org/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="../../css/org/landing-page.css" rel="stylesheet">
+    <link href="/css/app_1.min.css" rel="stylesheet">
+    <link href="/css/app_2.min.css" rel="stylesheet">
+    <link href="/css/overrides.css" rel="stylesheet">
+
+    <link href="/css/org/landing-page.css" rel="stylesheet">
+
+    <link href="/vendors/bower_components/animate.css/animate.min.css" rel="stylesheet">
+    <link href="/vendors/bower_components/material-design-iconic-font/dist/css/material-design-iconic-font.min.css" rel="stylesheet">
+
 
     <!-- Custom Fonts -->
-    <link href="../../css/org/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/org/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -38,14 +46,24 @@
       <div class="intro-header" style="background: #43cea2; /* fallback for old browsers */
 background: -webkit-linear-gradient(to left, #43cea2 , #185a9d); /* Chrome 10-25, Safari 5.1-6 */
 background: linear-gradient(to left, #43cea2 , #185a9d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-">
+background-size: cover">
     {{/if}}
 
         <div class="container">
 
+
             <div class="row">
+
                 <div class="col-lg-12">
-                  {{{body}}}
+                  <div class="intro-message">
+
+                    <h1>{{org.name}}</h1>
+                    <h3>{{org.tagline}}</h3>
+                    <hr class="intro-divider">
+
+                    {{{body}}}
+                  </div>
+
                 </div>
             </div>
 

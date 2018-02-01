@@ -3,6 +3,8 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var passport = require('passport');
 var User = require('../models/User');
+var Org = require('../models/Org');
+
 
 /**
  * Login required middleware
@@ -22,10 +24,22 @@ exports.loginGet = function(req, res) {
   if (req.user) {
     return res.redirect('/');
   }
-  res.render('account/login', {
-    title: 'Log in',
-    layout: 'auth'
-  });
+
+  if(req.params.subdomain){
+    Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
+      res.render('org/applicant_login', {
+        title: 'Log in',
+        'org': theOrg,
+        layout: 'org-landing'
+      });
+    });
+  }else{
+    res.render('account/login', {
+      title: 'Log in',
+      layout: 'auth'
+    });
+  }
+
 };
 
 /**
@@ -72,10 +86,25 @@ exports.signupGet = function(req, res) {
   if (req.user) {
     return res.redirect('/');
   }
-  res.render('account/signup', {
-    title: 'Sign up',
-    layout: 'auth'
-  });
+  if (req.params.subdomain){
+    Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
+      if(theOrg && !req.isAuthenticated()) {
+        console.log('Found it! ' + theOrg);
+        res.render('org/applicant_signup', {
+          org: theOrg,
+          layout: 'org-landing'
+        });
+      } else {
+        console.log('no org '+theOrg);
+        res.redirect('/');
+      }
+    });
+  }else{
+    res.render('account/signup', {
+      title: 'Sign up',
+      layout: 'auth'
+    });
+  }
 };
 
 /**
@@ -96,21 +125,34 @@ exports.signupPost = function(req, res, next) {
   }
 
   User.findOne({ email: req.body.email }, function(err, user) {
+    var admin = true;
+
     if (user) {
       req.flash('error', { msg: 'The email address you have entered is already associated with another account.' });
       return res.redirect('/signup');
     }
-    user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      admin: true
-    });
-    user.save(function(err) {
-      req.logIn(user, function(err) {
-        res.redirect('/');
+
+    if (req.params.subdomain){
+      Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
+        if(theOrg){
+          admin = false;
+        } else {
+          req.redirect('/');
+        }
+      }).then(function(env){
+        user = new User({
+          name: req.body.name,
+          email: req.body.email,
+          password: req.body.password,
+          admin: admin
+        });
+        user.save(function(err) {
+          req.logIn(user, function(err) {
+            res.redirect('/');
+          });
+        });
       });
-    });
+    }
   });
 };
 

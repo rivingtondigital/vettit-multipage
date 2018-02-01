@@ -2,8 +2,8 @@ var User = require('../models/User');
 var Org = require('../models/Org');
 var Application = require('../models/Application');
 
-var config = require('../config/dev_config');
-console.log(config.domain);
+var config = require('../config/settings');
+
 
 /**
  * GET subdomain.volunteercheck.co/
@@ -12,6 +12,7 @@ exports.showOrg = function(req, res) {
   console.log("SHOW ORG");
   console.log(req.cookies);
   res.clearCookie("session");
+  console.info(req.params);
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
     if(theOrg && !req.isAuthenticated()) {
       res.render('landingpage', {
@@ -32,6 +33,7 @@ exports.showOrg = function(req, res) {
     }
   })
 };
+
 
 /**
  * GET /orgs/new
@@ -170,6 +172,7 @@ exports.authRedirect = function(req, res) {
   res.redirect('https://'+ config.domain +'/auth/facebook');
 };
 
+
 exports.rewriteSubdomain = function(req, res) {
   console.log(req.cookies);
   var cookieSubdomain = req.cookies['auth_subdomain'];
@@ -182,3 +185,9 @@ exports.rewriteSubdomain = function(req, res) {
     res.redirect("/");
   }
 };
+
+exports.stripSubdomain = function(req, res){
+  parts = req.path.split('/');
+  less = parts.slice(3, parts.length).join('/');
+  res.redirect(config.domain+less);
+}

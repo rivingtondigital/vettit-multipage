@@ -1,0 +1,37 @@
+<div class="lc-block toggled" id="l-login">
+  {{#if messages.error}}
+    <div role="alert" class="alert alert-danger">
+      {{#each messages.error}}
+        <div>{{msg}}</div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  <form method="POST">
+    <div class="lcb-form">
+        <div class="input-group m-b-20">
+            <span class="input-group-addon"><i class="zmdi zmdi-account"></i></span>
+            <div class="fg-line">
+                <input type="text" name="name" id="name" placeholder="Name" class="form-control" autofocus>
+            </div>
+        </div>
+        <div class="input-group m-b-20">
+            <span class="input-group-addon"><i class="zmdi zmdi-email"></i></span>
+            <div class="fg-line">
+                <input type="email" name="email" id="email" placeholder="Email" class="form-control">
+            </div>
+        </div>
+        <div class="input-group m-b-20">
+            <span class="input-group-addon"><i class="zmdi zmdi-key"></i></span>
+            <div class="fg-line">
+                <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+            </div>
+        </div>
+        <input type="hidden" name="organizer" value="true">
+        <button type="submit" class="btn btn-success">Sign Up</button>
+        <div class='col-12 pull-right'>
+          <a href='/login'>sign in</a>
+        </div>
+      </div>
+    </form>
+</div>
