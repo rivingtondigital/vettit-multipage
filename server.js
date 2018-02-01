@@ -113,7 +113,7 @@ app.get('/s/:subdomain', orgController.showOrg);
 app.get('/s/:subdomain/apply', appController.newApp);
 app.post('/s/:subdomain/apply', appController.createApp);
 app.get('/s/:subdomain/status', appController.appStatus);
-app.get('/s/:subdomain/auth/facebook', orgController.authRedirect);
+app.get('/s/:subdomain/auth/:provider(facebook|google)', orgController.authRedirect);
 
 app.get('/s/:subdomain/signup', userController.signupGet);
 app.post('/s/:subdomain/signup', userController.signupPost);
@@ -135,6 +135,12 @@ app.post('/orgs/new', orgController.createOrg);
 app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
 app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/auth/rewrite', failureRedirect: '/auth/rewrite' }));
 
+app.get('/auth/google', passport.authenticate('google', {scope: ['profile']}));
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: '/auth/rewrite',
+    successRedirect: '/auth/rewrite'
+}));
 
 app.get('/auth/rewrite', orgController.rewriteSubdomain);
 app.get(/^\/s\/.*\/(css|fonts|img|js|vendors)+\/.+$/, orgController.stripSubdomain);

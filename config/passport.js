@@ -1,11 +1,14 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+// var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
-
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 var User = require('../models/User');
+
+var config = require('../config/settings');
+
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -32,6 +35,18 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
     });
   });
 }));
+
+passport.use(new GoogleStrategy({
+    clientID: GOOGLE_ID,
+    clientSecret: GOOGLE_SECRET,
+    callbackURL: config.domain + "/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return cb(err, user);
+    });
+  }
+));
 
 // Sign in with Facebook
 passport.use(new FacebookStrategy({

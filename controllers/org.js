@@ -168,8 +168,9 @@ exports.updateOrg = function(req, res) {
 exports.authRedirect = function(req, res) {
   console.log("AUTH REDIRECT");
   res.clearCookie("session");
+  console.info(req.params.provider);
   res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: config.domain });
-  res.redirect('https://'+ config.domain +'/auth/facebook');
+  res.redirect(config.domain +'auth/facebook');
 };
 
 
