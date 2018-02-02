@@ -166,11 +166,10 @@ exports.updateOrg = function(req, res) {
 };
 
 exports.authRedirect = function(req, res) {
-  console.log("AUTH REDIRECT");
+  console.log("AUTH REDIRECT: " + req.params.provider);
   res.clearCookie("session");
-  console.info(req.params.provider);
   res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: config.domain });
-  res.redirect(config.domain +'auth/facebook');
+  res.redirect(config.domain +'/auth/' + req.params.provider);
 };
 
 
@@ -190,5 +189,5 @@ exports.rewriteSubdomain = function(req, res) {
 exports.stripSubdomain = function(req, res){
   parts = req.path.split('/');
   less = parts.slice(3, parts.length).join('/');
-  res.redirect(config.domain+less);
+  res.redirect(config.domain + '/' + less);
 }

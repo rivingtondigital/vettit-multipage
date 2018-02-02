@@ -37,16 +37,91 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
 }));
 
 passport.use(new GoogleStrategy({
-    clientID: GOOGLE_ID,
-    clientSecret: GOOGLE_SECRET,
-    callbackURL: config.domain + "/auth/google/callback"
+    clientID: process.env.GOOGLE_ID,
+    clientSecret: process.env.GOOGLE_SECRET,
+    callbackURL: config.domain + "/auth/google/callback",
+    passReqToCallback: true
   },
-  function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
+  function(req, accessToken, refreshToken, data, done) {
+    console.log("<<<GOOGLE REPLY>>>>");
+    profile = data._json;
+    var userdata = {};
+    
+    for (email in profile.emails){
+      if (profile.emails[email].type == 'account'){
+        userdata.email = profile.emails[email].value;
+      }
+    }
+    if(profile.image){
+      userdata.picture = profile.image.url;
+    }
+    
+    userdata.name = profile.name.givenName + " " + profile.name.familyName;
+    range = profile.ageRange;
+    if(range.min && range.max){
+      userdata.age_range = range.min +" - "+ range.max;
+    } else if(range.min){
+      userdata.age_range = range.min + " or over";
+    } else if(range.max){
+      userdata.age_range = "Under " + range.max;
+    }else{
+      userdata.age_range = "" 
+    }
+
+    if(req.user){
+      User.findOne({ google: profile.id }, function(err, user) {
+        if(user){
+          req.flash('error', { msg: 'That Google account has already been linked.' });
+          done(err);
+        }else{
+          User.findById(req.user.id, function(err, user) {
+            user.name = user.name || userdata.name;
+            user.gender = user.gender || profile.gender;
+            user.picture = user.picture || userdata.picture;
+            user.google = profile.id;
+            user.link = user.link || profile.link;
+            user.birthday = user.birthday || profile.birthday;
+            user.age_range = user.age_range || userdata.age_range
+
+            user.save(function(err) {
+              req.flash('success', { msg: 'Your Google account has been linked.' });
+              done(err, user);
+            });
+          });
+        }
+      });
+    } else {
+      User.findOne({ google: profile.id }, function(err, user) {
+        if(user){
+          return done(err, user);
+        } else {
+          User.findOne({ email: profile._json.email }, function(err, user) { 
+            if(user){
+              req.flash('error', { msg: user.email + ' is already associated with another account.' });
+              return done(err);
+            } else {
+              var newUser = new User({
+              name: userdata.name,
+              email: userdata.email,
+              gender: profile.gender,
+              picture: userdata.picture,
+              google: profile.id,
+              link: profile.link,
+              birthday: profile.birthday,
+              admin:false
+            });
+            newUser.save(function(err){
+              req.flash('success', { msg: 'Your Google account has been linked.' });
+              done(err, user);
+            });
+          } 
+        });
+      }
+    }
   }
-));
+});
+}));
+
 
 // Sign in with Facebook
 passport.use(new FacebookStrategy({
