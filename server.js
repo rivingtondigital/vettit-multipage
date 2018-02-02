@@ -132,14 +132,23 @@ app.get('/orgs/:id/edit', orgController.editOrg);
 app.post('/orgs/:id/edit', orgController.updateOrg);
 app.post('/orgs/new', orgController.createOrg);
 
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/auth/rewrite', failureRedirect: '/auth/rewrite' }));
 
-app.get('/auth/google', passport.authenticate('google', 
+
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+app.get('/auth/linkedin', passport.authenticate('linkedin'));
+app.get('/auth/google', passport.authenticate('google',
                                   {scope: [
                                      'https://www.googleapis.com/auth/userinfo.email',
                                      'https://www.googleapis.com/auth/plus.login'
                                   ]}));
+
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/auth/rewrite',
+    failureRedirect: '/auth/rewrite'
+}));
+
 
 app.get('/auth/google/callback',
   passport.authenticate('google', {
@@ -147,7 +156,6 @@ app.get('/auth/google/callback',
     successRedirect: '/auth/rewrite'
 }));
 
-app.get('/auth/linkedin', passport.authenticate('linkedin'));
 
 app.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', {

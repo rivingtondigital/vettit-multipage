@@ -58,16 +58,83 @@ passport.use(new LinkedInStrategy({
     passReqToCallback: true
   },
   function(req, accessToken, refreshToken, data, done){
+    console.info('<<LINKEDIN REPLY>>');
     console.info(data);
     profile = data._json;
-    var userdata = {};
-    userdata.email = profile.emailAddress;
-    userdata.name = profile.firstName + ' ' + profile.lastName;
-    userdata.location = profile.location.name;
-    userdata.picture = profile.pictureUrl;
-    userdata.link = profile.publicProfileUrl;
-    done(null);
+    var userdata = {
+      'source': 'linkedin',
+      'id': profile.id,
+      'email': profile.emailAddress,
+      'name': profile.firstName + ' ' + profile.lastName,
+      'location': profile.location.name,
+      'picture': profile.pictureUrl,
+      'link': profile.publicProfileUrl
+    };
+    auth_id_qry = {'linkedin': profile.id}
+
+    process_auth_data(req, userdata, auth_id_qry);
 }));
+
+function process_auth_data(req, data, auth_id_qry){
+  if(req.user){
+    console.info("Linking a logged in user.");
+    User.findOne(auth_id_qry, function(err, user) {
+      if(user){
+        console.info(data.source + " account already linked to user.");
+        req.flash('error', { msg: 'That ' + data.source + ' account has already been linked.' });
+        done(err);
+      }else{
+        console.info("Updating our records with anything new from the user.");
+        User.findById(req.user.id, function(err, user) {
+          user.name = user.name || data.name;
+          user.gender = user.gender || data.gender;
+          user.picture = user.picture || data.picture;
+          user.link = user.link || data.link;
+          user.birthday = user.birthday || data.birthday;
+          user.age_range = user.age_range || data.age_range;
+
+          user[data.source] = data.id;
+          user.save(function(err) {
+            req.flash('success', { msg: 'Your Google account has been linked.' });
+            done(err, user);
+          });
+        });
+      }
+    });
+  } else {
+    User.findOne(auth_id_qry, function(err, user) {
+      if(user){
+        console.info("Found the right user");
+        return done(err, user);
+      } else {
+        User.findOne({ email: data.email }, function(err, user) {
+          if(user){
+            console.info("Found the wrong user.");
+            req.flash('error', { msg: user.email + ' is already associated with another account.' });
+            return done(err);
+          } else {
+            console.info("Made a new user.");
+            var newUser = new User({
+              name: data.name,
+              email: data.email,
+              gender: data.gender,
+              picture: data.picture,
+              link: data.link,
+              birthday: data.birthday,
+              admin:false
+            });
+            newUser[data.source] = data.id;
+
+            newUser.save(function(err){
+              req.flash('success', { msg: 'Your Google account has been linked.' });
+              done(err, user);
+            });
+          }
+        });
+      }
+    });
+  }
+}
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_ID,
