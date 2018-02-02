@@ -1,2 +1,2 @@
-exports.domain = "http://a.vettit/";
+exports.domain = "http://vettit-dev.com";
 
