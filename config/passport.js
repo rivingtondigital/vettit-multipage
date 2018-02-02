@@ -72,7 +72,8 @@ passport.use(new LinkedInStrategy({
     };
     auth_id_qry = {'linkedin': profile.id}
 
-    process_auth_data(req, userdata, auth_id_qry);
+    ret = process_auth_data(req, userdata, auth_id_qry);
+		done(ret.err, ret.user);
 }));
 
 function process_auth_data(req, data, auth_id_qry){
@@ -82,7 +83,8 @@ function process_auth_data(req, data, auth_id_qry){
       if(user){
         console.info(data.source + " account already linked to user.");
         req.flash('error', { msg: 'That ' + data.source + ' account has already been linked.' });
-        done(err);
+        //done(err);
+				return {'err': err};
       }else{
         console.info("Updating our records with anything new from the user.");
         User.findById(req.user.id, function(err, user) {
@@ -96,7 +98,8 @@ function process_auth_data(req, data, auth_id_qry){
           user[data.source] = data.id;
           user.save(function(err) {
             req.flash('success', { msg: 'Your Google account has been linked.' });
-            done(err, user);
+            //done(err, user);
+						return {'err': err, 'user': user};
           });
         });
       }
@@ -105,13 +108,14 @@ function process_auth_data(req, data, auth_id_qry){
     User.findOne(auth_id_qry, function(err, user) {
       if(user){
         console.info("Found the right user");
-        return done(err, user);
+				return {'err': err, 'user': user};
       } else {
         User.findOne({ email: data.email }, function(err, user) {
           if(user){
             console.info("Found the wrong user.");
             req.flash('error', { msg: user.email + ' is already associated with another account.' });
-            return done(err);
+            // return done(err);
+						return {'err': err};
           } else {
             console.info("Made a new user.");
             var newUser = new User({
@@ -127,7 +131,8 @@ function process_auth_data(req, data, auth_id_qry){
 
             newUser.save(function(err){
               req.flash('success', { msg: 'Your Google account has been linked.' });
-              done(err, user);
+              //done(err, user);
+							return {'err': err, 'user': user};
             });
           }
         });
