@@ -101,26 +101,26 @@ passport.use(new GoogleStrategy({
               return done(err);
             } else {
               var newUser = new User({
-              name: userdata.name,
-              email: userdata.email,
-              gender: profile.gender,
-              picture: userdata.picture,
-              google: profile.id,
-              link: profile.link,
-              birthday: profile.birthday,
-              admin:false
-            });
-            newUser.save(function(err){
-              req.flash('success', { msg: 'Your Google account has been linked.' });
-              done(err, user);
-            });
-          } 
-        });
-      }
+                name: userdata.name,
+                email: userdata.email,
+                gender: profile.gender,
+                picture: userdata.picture,
+                google: profile.id,
+                link: profile.link,
+                birthday: profile.birthday,
+                admin:false
+              });
+              newUser.save(function(err){
+                req.flash('success', { msg: 'Your Google account has been linked.' });
+                done(err, user);
+              });
+            }
+          });
+        }
+      });
     }
-  }
-});
-}));
+  })
+);
 
 
 // Sign in with Facebook
