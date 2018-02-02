@@ -113,7 +113,7 @@ app.get('/s/:subdomain', orgController.showOrg);
 app.get('/s/:subdomain/apply', appController.newApp);
 app.post('/s/:subdomain/apply', appController.createApp);
 app.get('/s/:subdomain/status', appController.appStatus);
-app.get('/s/:subdomain/auth/:provider(facebook|google)', orgController.authRedirect);
+app.get('/s/:subdomain/auth/:provider(facebook|google|linkedin)', orgController.authRedirect);
 
 app.get('/s/:subdomain/signup', userController.signupGet);
 app.post('/s/:subdomain/signup', userController.signupPost);
@@ -146,6 +146,15 @@ app.get('/auth/google/callback',
     failureRedirect: '/auth/rewrite',
     successRedirect: '/auth/rewrite'
 }));
+
+app.get('/auth/linkedin', passport.authenticate('linkedin'));
+
+app.get('/auth/linkedin/callback',
+  passport.authenticate('linkedin', {
+    failureRedirect: '/auth/rewrite',
+    successRedirect: '/auth/rewrite'
+}));
+
 
 app.get('/auth/rewrite', orgController.rewriteSubdomain);
 app.get(/^\/s\/.*\/(css|fonts|img|js|vendors)+\/.+$/, orgController.stripSubdomain);

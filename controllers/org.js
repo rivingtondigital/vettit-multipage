@@ -166,9 +166,9 @@ exports.updateOrg = function(req, res) {
 };
 
 exports.authRedirect = function(req, res) {
-  console.log("AUTH REDIRECT: " + req.params.provider);
+  console.log("AUTH REDIRECT: (" + req.params.subdomain + ")" + config.domain + "<-" + req.params.provider);
   res.clearCookie("session");
-  res.cookie('auth_subdomain', req.params.subdomain, { httpOnly: true, domain: config.domain });
+  res.cookie('auth_subdomain', req.params.subdomain, { domain: "."+config.domain });
   res.redirect(config.domain +'/auth/' + req.params.provider);
 };
 
@@ -178,7 +178,7 @@ exports.rewriteSubdomain = function(req, res) {
   var cookieSubdomain = req.cookies['auth_subdomain'];
   if(cookieSubdomain && cookieSubdomain.length) {
       console.log("Found subdomain: " + cookieSubdomain);
-      res.clearCookie("auth_subdomain");
+     // res.clearCookie("auth_subdomain");
       res.redirect("https://" + cookieSubdomain + "." + config.domain);
   } else {
     console.log("Didn't find a subdomain cookie - Maybe it expired?");

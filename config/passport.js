@@ -4,6 +4,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 // var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 
 var User = require('../models/User');
 
@@ -36,17 +37,51 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
   });
 }));
 
+passport.use(new LinkedInStrategy({
+    clientID: process.env.LINKEDIN_ID,
+    clientSecret: process.env.LINKEDIN_SECRET,
+    callbackURL: config.domain + "/auth/linkedin/callback",
+    scope: ['r_emailaddress', 'r_basicprofile'],
+    state: true,
+    profileFields: [
+    "first-name",
+    "last-name",
+    "email-address",
+    "headline",
+    "summary",
+    "industry",
+    "picture-url",
+    "positions",
+    "public-profile-url",
+    "location"
+    ],
+    passReqToCallback: true
+  },
+  function(req, accessToken, refreshToken, data, done){
+    console.info(data);
+    profile = data._json;
+    var userdata = {};
+    userdata.email = profile.emailAddress;
+    userdata.name = profile.firstName + ' ' + profile.lastName;
+    userdata.location = profile.location.name;
+    userdata.picture = profile.pictureUrl;
+    userdata.link = profile.publicProfileUrl;
+    done(null);
+}));
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_ID,
     clientSecret: process.env.GOOGLE_SECRET,
     callbackURL: config.domain + "/auth/google/callback",
+    profileFields: ['name', 'email', 'gender', 'location', 'link', 'birthday', 'age_range'],
     passReqToCallback: true
   },
   function(req, accessToken, refreshToken, data, done) {
     console.log("<<<GOOGLE REPLY>>>>");
     profile = data._json;
     var userdata = {};
-    
+    console.info(profile);
+ 
     for (email in profile.emails){
       if (profile.emails[email].type == 'account'){
         userdata.email = profile.emails[email].value;
@@ -58,22 +93,27 @@ passport.use(new GoogleStrategy({
     
     userdata.name = profile.name.givenName + " " + profile.name.familyName;
     range = profile.ageRange;
-    if(range.min && range.max){
-      userdata.age_range = range.min +" - "+ range.max;
-    } else if(range.min){
-      userdata.age_range = range.min + " or over";
-    } else if(range.max){
-      userdata.age_range = "Under " + range.max;
-    }else{
-      userdata.age_range = "" 
+    if(range){
+      if(range.min && range.max){
+        userdata.age_range = range.min +" - "+ range.max;
+      } else if(range.min){
+        userdata.age_range = range.min + " or over";
+      } else if(range.max){
+        userdata.age_range = "Under " + range.max;
+      }else{
+        userdata.age_range = "" 
+      }
     }
 
     if(req.user){
+      console.info("Linking a logged in user.");
       User.findOne({ google: profile.id }, function(err, user) {
         if(user){
+          console.info("Google account already linked to user.");
           req.flash('error', { msg: 'That Google account has already been linked.' });
           done(err);
         }else{
+          console.info("Updating our records with anything new from the user.");
           User.findById(req.user.id, function(err, user) {
             user.name = user.name || userdata.name;
             user.gender = user.gender || profile.gender;
@@ -93,13 +133,16 @@ passport.use(new GoogleStrategy({
     } else {
       User.findOne({ google: profile.id }, function(err, user) {
         if(user){
+          console.info("Found the right user");
           return done(err, user);
         } else {
-          User.findOne({ email: profile._json.email }, function(err, user) { 
+          User.findOne({ email: profile.email }, function(err, user) { 
             if(user){
+              console.info("Found the wrong user.");
               req.flash('error', { msg: user.email + ' is already associated with another account.' });
               return done(err);
             } else {
+              console.info("Made a new user.");
               var newUser = new User({
                 name: userdata.name,
                 email: userdata.email,
