@@ -70,10 +70,61 @@ passport.use(new LinkedInStrategy({
       'picture': profile.pictureUrl,
       'link': profile.publicProfileUrl
     };
-    auth_id_qry = {'linkedin': profile.id}
+    var auth_id_qry = {'linkedin': profile.id}
 
     process_auth_data(req, userdata, auth_id_qry, done);
 }));
+
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_ID,
+    clientSecret: process.env.GOOGLE_SECRET,
+    callbackURL: config.domain + "/auth/google/callback",
+    profileFields: ['name', 'email', 'gender', 'location', 'link', 'birthday', 'age_range'],
+    passReqToCallback: true
+  },
+  function(req, accessToken, refreshToken, data, done) {
+    console.log("<<<GOOGLE REPLY>>>>");
+    profile = data._json;
+    console.info(profile);
+
+    var userdata = {
+      'source': 'google',
+      'id': profile.id,
+      'name': profile.name.givenName + " " + profile.name.familyName,
+      'link': profile.link,
+      'birthday': profile.birthday
+    };
+
+    for (email in profile.emails){
+      if (profile.emails[email].type == 'account'){
+        userdata.email = profile.emails[email].value;
+      }
+    }
+
+    if(profile.image){
+      userdata.picture = profile.image.url;
+    }
+
+    range = profile.ageRange;
+    if(range){
+      if(range.min && range.max){
+        userdata.age_range = range.min +" - "+ range.max;
+      } else if(range.min){
+        userdata.age_range = range.min + " or over";
+      } else if(range.max){
+        userdata.age_range = "Under " + range.max;
+      }else{
+        userdata.age_range = ""
+      }
+    }
+
+    var auth_id_qry = {'google': profile.id}
+    process_auth_data(req, data, auth_id_qry, done);
+
+  })
+);
+
 
 function process_auth_data(req, data, auth_id_qry, done){
   if(req.user){
@@ -95,7 +146,7 @@ function process_auth_data(req, data, auth_id_qry, done){
 
           user[data.source] = data.id;
           user.save(function(err) {
-            req.flash('success', { msg: 'Your Google account has been linked.' });
+            req.flash('success', { msg: 'Your' + data.source + ' account has been linked.' });
             done(err, user);
           });
         });
@@ -126,7 +177,7 @@ function process_auth_data(req, data, auth_id_qry, done){
             newUser[data.source] = data.id;
 
             newUser.save(function(err){
-              req.flash('success', { msg: 'Your Google account has been linked.' });
+              req.flash('success', { msg: 'Your' + data.source +' account has been linked.' });
               done(err, user);
             });
           }
@@ -135,103 +186,6 @@ function process_auth_data(req, data, auth_id_qry, done){
     });
   }
 }
-
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_ID,
-    clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: config.domain + "/auth/google/callback",
-    profileFields: ['name', 'email', 'gender', 'location', 'link', 'birthday', 'age_range'],
-    passReqToCallback: true
-  },
-  function(req, accessToken, refreshToken, data, done) {
-    console.log("<<<GOOGLE REPLY>>>>");
-    profile = data._json;
-    var userdata = {};
-    console.info(profile);
- 
-    for (email in profile.emails){
-      if (profile.emails[email].type == 'account'){
-        userdata.email = profile.emails[email].value;
-      }
-    }
-    if(profile.image){
-      userdata.picture = profile.image.url;
-    }
-    
-    userdata.name = profile.name.givenName + " " + profile.name.familyName;
-    range = profile.ageRange;
-    if(range){
-      if(range.min && range.max){
-        userdata.age_range = range.min +" - "+ range.max;
-      } else if(range.min){
-        userdata.age_range = range.min + " or over";
-      } else if(range.max){
-        userdata.age_range = "Under " + range.max;
-      }else{
-        userdata.age_range = "" 
-      }
-    }
-
-    if(req.user){
-      console.info("Linking a logged in user.");
-      User.findOne({ google: profile.id }, function(err, user) {
-        if(user){
-          console.info("Google account already linked to user.");
-          req.flash('error', { msg: 'That Google account has already been linked.' });
-          done(err);
-        }else{
-          console.info("Updating our records with anything new from the user.");
-          User.findById(req.user.id, function(err, user) {
-            user.name = user.name || userdata.name;
-            user.gender = user.gender || profile.gender;
-            user.picture = user.picture || userdata.picture;
-            user.google = profile.id;
-            user.link = user.link || profile.link;
-            user.birthday = user.birthday || profile.birthday;
-            user.age_range = user.age_range || userdata.age_range
-
-            user.save(function(err) {
-              req.flash('success', { msg: 'Your Google account has been linked.' });
-              done(err, user);
-            });
-          });
-        }
-      });
-    } else {
-      User.findOne({ google: profile.id }, function(err, user) {
-        if(user){
-          console.info("Found the right user");
-          return done(err, user);
-        } else {
-          User.findOne({ email: profile.email }, function(err, user) { 
-            if(user){
-              console.info("Found the wrong user.");
-              req.flash('error', { msg: user.email + ' is already associated with another account.' });
-              return done(err);
-            } else {
-              console.info("Made a new user.");
-              var newUser = new User({
-                name: userdata.name,
-                email: userdata.email,
-                gender: profile.gender,
-                picture: userdata.picture,
-                google: profile.id,
-                link: profile.link,
-                birthday: profile.birthday,
-                admin:false
-              });
-              newUser.save(function(err){
-                req.flash('success', { msg: 'Your Google account has been linked.' });
-                done(err, user);
-              });
-            }
-          });
-        }
-      });
-    }
-  })
-);
-
 
 // Sign in with Facebook
 passport.use(new FacebookStrategy({
@@ -243,6 +197,8 @@ passport.use(new FacebookStrategy({
 }, function(req, accessToken, refreshToken, profile, done) {
   console.log("FACEEBOOK CALLBACK!!!");
   console.log(JSON.stringify(profile));
+
+
   if (req.user) {
     User.findOne({ facebook: profile.id }, function(err, user) {
       if (user) {
