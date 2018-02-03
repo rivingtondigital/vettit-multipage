@@ -127,6 +127,7 @@ app.post('/s/:subdomain/login', userController.loginPost);
 
 
 app.get('/orgs/:id/applications', appController.listApps);
+app.get('/orgs/:id/applications/out/applications.csv', appController.csvOutput);
 app.get('/orgs/:id/applications/filter/:filter', appController.listApps);
 app.get('/orgs/:id/applications/:app_id', appController.getApplication);
 app.get('/orgs/:id/applications/:app_id/review', appController.updateApplication);
