@@ -113,6 +113,7 @@ app.get('/s/:subdomain/status', appController.appStatus);
 app.get('/s/:subdomain/auth/facebook', orgController.authRedirect);
 
 app.get('/orgs/:id/applications', appController.listApps);
+app.get('/orgs/:id/applications/out/applications.csv', appController.csvOutput);
 app.get('/orgs/:id/applications/filter/:filter', appController.listApps);
 app.get('/orgs/:id/applications/:app_id', appController.getApplication);
 app.get('/orgs/:id/applications/:app_id/review', appController.updateApplication);
