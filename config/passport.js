@@ -44,6 +44,7 @@ passport.use(new LinkedInStrategy({
     scope: ['r_emailaddress', 'r_basicprofile'],
     state: true,
     profileFields: [
+    "id",
     "first-name",
     "last-name",
     "email-address",
@@ -60,6 +61,9 @@ passport.use(new LinkedInStrategy({
   function(req, accessToken, refreshToken, data, done){
     console.info('<<LINKEDIN REPLY>>');
     console.info(data);
+    var raw = JSON.parse(data._raw);
+    console.log(raw);
+    console.log('-----------');
     profile = data._json;
     var userdata = {
       'source': 'linkedin',
@@ -71,6 +75,7 @@ passport.use(new LinkedInStrategy({
       'link': profile.publicProfileUrl
     };
     var auth_id_qry = {'linkedin': profile.id}
+    console.log(userdata);
 
     process_auth_data(req, userdata, auth_id_qry, done);
 }));
@@ -86,13 +91,12 @@ passport.use(new GoogleStrategy({
   function(req, accessToken, refreshToken, data, done) {
     console.log("<<<GOOGLE REPLY>>>>");
     profile = data._json;
-    console.info(profile);
 
     var userdata = {
       'source': 'google',
       'id': profile.id,
       'name': profile.name.givenName + " " + profile.name.familyName,
-      'link': profile.link,
+      'link': profile.url,
       'birthday': profile.birthday
     };
 
@@ -120,13 +124,16 @@ passport.use(new GoogleStrategy({
     }
 
     var auth_id_qry = {'google': profile.id}
-    process_auth_data(req, data, auth_id_qry, done);
+    console.info(userdata);
+    console.info('_________________');
+    process_auth_data(req, userdata, auth_id_qry, done);
 
   })
 );
 
 
 function process_auth_data(req, data, auth_id_qry, done){
+  console.log(data);
   if(req.user){
     console.info("Linking a logged in user.");
     User.findOne(auth_id_qry, function(err, user) {
@@ -144,7 +151,7 @@ function process_auth_data(req, data, auth_id_qry, done){
           user.birthday = user.birthday || data.birthday;
           user.age_range = user.age_range || data.age_range;
 
-          user[data.source] = data.id;
+          user.set(data.source) = data.id;
           user.save(function(err) {
             req.flash('success', { msg: 'Your' + data.source + ' account has been linked.' });
             done(err, user);
@@ -165,7 +172,7 @@ function process_auth_data(req, data, auth_id_qry, done){
             return done(err);
           } else {
             console.info("Made a new user.");
-            var newUser = new User({
+            var rec = {
               name: data.name,
               email: data.email,
               gender: data.gender,
@@ -173,8 +180,11 @@ function process_auth_data(req, data, auth_id_qry, done){
               link: data.link,
               birthday: data.birthday,
               admin:false
-            });
-            newUser[data.source] = data.id;
+            }
+            rec[data.source] = data.id;
+
+            var newUser = new User(rec);
+            console.log(JSON.stringify(newUser));
 
             newUser.save(function(err){
               req.flash('success', { msg: 'Your' + data.source +' account has been linked.' });

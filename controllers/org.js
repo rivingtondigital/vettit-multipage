@@ -168,7 +168,7 @@ exports.updateOrg = function(req, res) {
 exports.authRedirect = function(req, res) {
   console.log("AUTH REDIRECT: (" + req.params.subdomain + ")" + config.domain + "<-" + req.params.provider);
   res.clearCookie("session");
-  res.cookie('auth_subdomain', req.params.subdomain, { domain: "."+config.domain });
+  res.cookie('auth_subdomain', req.params.subdomain, { domain: "." + config.domain });
   res.redirect(config.domain +'/auth/' + req.params.provider);
 };
 
