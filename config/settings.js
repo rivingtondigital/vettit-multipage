@@ -1,2 +1,3 @@
-exports.domain = "http://vettit-dev.com";
+exports.domain = "a.vettit";
+exports.protocol = "http://";
 

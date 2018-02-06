@@ -40,7 +40,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
 passport.use(new LinkedInStrategy({
     clientID: process.env.LINKEDIN_ID,
     clientSecret: process.env.LINKEDIN_SECRET,
-    callbackURL: config.domain + "/auth/linkedin/callback",
+    callbackURL: config.protocol + config.domain + "/auth/linkedin/callback",
     scope: ['r_emailaddress', 'r_basicprofile'],
     state: true,
     profileFields: [
@@ -84,7 +84,7 @@ passport.use(new LinkedInStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_ID,
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: config.domain + "/auth/google/callback",
+    callbackURL: config.protocol + config.domain + "/auth/google/callback",
     profileFields: ['name', 'email', 'gender', 'location', 'link', 'birthday', 'age_range'],
     passReqToCallback: true
   },
