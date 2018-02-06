@@ -204,83 +204,110 @@ passport.use(new FacebookStrategy({
   callbackURL: '/auth/facebook/callback',
   profileFields: ['name', 'email', 'gender', 'location', 'link', 'birthday', 'age_range'],
   passReqToCallback: true
-}, function(req, accessToken, refreshToken, profile, done) {
-  console.log("FACEEBOOK CALLBACK!!!");
-  console.log(JSON.stringify(profile));
+}, function(req, accessToken, refreshToken, data, done) {
+    console.log("FACEEBOOK CALLBACK!!!");
+    console.log(JSON.stringify(profile));
 
+    profile = data._json;
 
-  if (req.user) {
-    User.findOne({ facebook: profile.id }, function(err, user) {
-      if (user) {
-        req.flash('error', { msg: 'There is already an existing account linked with Facebook that belongs to you.' });
-        done(err);
+    var userdata = {
+    'source': 'google',
+    'id': profile.id,
+    'name': profile.name.givenName + " " + profile.name.familyName,
+    'link': profile.url,
+    'birthday': profile.birthday
+    'gender': profile.gender
+    };
+
+    if(profile._json.age_range) {
+      if(profile.age_range.min && !profile.age_range.max) {
+        userdata.age_range = profile.age_range.min + " or over";
+      } else if(!profile.age_range.min && profile.age_range.max) {
+        userdata.age_range = "Under " + profile.age_range.max;
       } else {
-        User.findById(req.user.id, function(err, user) {
-          user.name = user.name || profile.name.givenName + ' ' + profile.name.familyName;
-          user.gender = user.gender || profile._json.gender;
-          user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
-          user.facebook = profile.id;
-          user.link = user.link || profile._json.link;
-          user.birthday = user.birthday || profile._json.birthday;
-          user.age_range = user.age_range || profile._json.age_range
-
-          if(profile._json.age_range) {
-            if(profile._json.age_range.min && !profile._json.age_range.max) {
-              user.age_range = profile._json.age_range.min + " or over";
-            } else if(!profile._json.age_range.min && profile._json.age_range.max) {
-              user.age_range = "Under " + profile._json.age_range.max;
-            } else {
-              user.age_range = profile._json.age_range.min + " - " + profile._json.age_range.max;
-            }
-          }
-
-          user.save(function(err) {
-            req.flash('success', { msg: 'Your Facebook account has been linked.' });
-            done(err, user);
-          });
-        });
+        userdata.age_range = profile.age_range.min + " - " + profile.age_range.max;
       }
-    });
-  } else {
-    User.findOne({ facebook: profile.id }, function(err, user) {
-      if (user) {
-        return done(err, user);
-      }
-      User.findOne({ email: profile._json.email }, function(err, user) {
-        if (user) {
-          req.flash('error', { msg: user.email + ' is already associated with another account.' });
-          done(err);
-        } else {
-          var newUser = new User({
-            name: profile.name.givenName + ' ' + profile.name.familyName,
-            email: profile._json.email,
-            gender: profile._json.gender,
-            location: profile._json.location && profile._json.location.name,
-            picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
-            facebook: profile.id,
-            link: profile._json.link,
-            birthday: profile._json.birthday,
-            admin:false
-          });
+    }
 
-          if(profile._json.age_range) {
-            if(profile._json.age_range.min && !profile._json.age_range.max) {
-              newUser.age_range = profile._json.age_range.min + " or over";
-            } else if(!profile._json.age_range.min && profile._json.age_range.max) {
-              newUser.age_range = "Under " + profile._json.age_range.max;
-            } else {
-              newUser.age_range = profile._json.age_range.min + " - " + profile._json.age_range.max;
-            }
-          }
+    var auth_id_qry = {'facebook': profile.id}
+    process_auth_data(req, userdata, auth_id_qry, done);
 
-          newUser.save(function(err) {
-            done(err, newUser);
-          });
-        }
-      });
-    });
-  }
-}));
+  })
+);
+
+//
+//  if (req.user) {
+//    User.findOne({ facebook: profile.id }, function(err, user) {
+//      if (user) {
+//        req.flash('error', { msg: 'There is already an existing account linked with Facebook that belongs to you.' });
+//        done(err);
+//      } else {
+//        User.findById(req.user.id, function(err, user) {
+//          user.name = user.name || profile.name.givenName + ' ' + profile.name.familyName;
+//          user.gender = user.gender || profile._json.gender;
+//          user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
+//          user.facebook = profile.id;
+//          user.link = user.link || profile._json.link;
+//          user.birthday = user.birthday || profile._json.birthday;
+//          user.age_range = user.age_range || profile._json.age_range
+//
+//          if(profile._json.age_range) {
+//            if(profile._json.age_range.min && !profile._json.age_range.max) {
+//              user.age_range = profile._json.age_range.min + " or over";
+//            } else if(!profile._json.age_range.min && profile._json.age_range.max) {
+//              user.age_range = "Under " + profile._json.age_range.max;
+//            } else {
+//              user.age_range = profile._json.age_range.min + " - " + profile._json.age_range.max;
+//            }
+//          }
+//
+//          user.save(function(err) {
+//            req.flash('success', { msg: 'Your Facebook account has been linked.' });
+//            done(err, user);
+//          });
+//        });
+//      }
+//    });
+//  } else {
+//    User.findOne({ facebook: profile.id }, function(err, user) {
+//      if (user) {
+//        return done(err, user);
+//      }
+//      User.findOne({ email: profile._json.email }, function(err, user) {
+//        if (user) {
+//          req.flash('error', { msg: user.email + ' is already associated with another account.' });
+//          done(err);
+//        } else {
+//          var newUser = new User({
+//            name: profile.name.givenName + ' ' + profile.name.familyName,
+//            email: profile._json.email,
+//            gender: profile._json.gender,
+//            location: profile._json.location && profile._json.location.name,
+//            picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
+//            facebook: profile.id,
+//            link: profile._json.link,
+//            birthday: profile._json.birthday,
+//            admin:false
+//          });
+//
+//          if(profile._json.age_range) {
+//            if(profile._json.age_range.min && !profile._json.age_range.max) {
+//              newUser.age_range = profile._json.age_range.min + " or over";
+//            } else if(!profile._json.age_range.min && profile._json.age_range.max) {
+//              newUser.age_range = "Under " + profile._json.age_range.max;
+//            } else {
+//              newUser.age_range = profile._json.age_range.min + " - " + profile._json.age_range.max;
+//            }
+//          }
+//
+//          newUser.save(function(err) {
+//            done(err, newUser);
+//          });
+//        }
+//      });
+//    });
+//  }
+//}));
 
 // Sign in with Twitter
 /*
