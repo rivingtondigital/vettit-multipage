@@ -29,6 +29,7 @@ var contactController = require('./controllers/contact');
 require('./config/passport');
 var app = express();
 
+var config = require('./config/settings');
 
 mongoose.connect(process.env.MONGOHQ_URL);
 mongoose.connection.on('error', function() {
@@ -79,7 +80,10 @@ app.use(session({
 	secret: process.env.SESSION_SECRET,
 	resave: true,
 	saveUninitialized: true,
-	store: new MongoStore({mongooseConnection: mongoose.connection})
+	store: new MongoStore({mongooseConnection: mongoose.connection}),
+	cookie: {
+		domain: '.' + config.domain
+	}
 }));
 app.use(flash());
 app.use(passport.initialize());

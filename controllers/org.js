@@ -10,10 +10,10 @@ var config = require('../config/settings');
  */
 exports.showOrg = function(req, res) {
   console.log("SHOW ORG");
-  console.log(req.cookies);
-//  res.clearCookie("session");
-  console.info(req.params);
-  res.cookie('try_it', 'here', {domain: '.'+config.domain });
+  console.log(req.params.subdomain);
+  //res.clearCookie("session");
+  console.info(req.user);
+
   Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
     if(theOrg && !req.isAuthenticated()) {
       res.render('landingpage', {
@@ -169,7 +169,7 @@ exports.updateOrg = function(req, res) {
 exports.authRedirect = function(req, res) {
   console.log("")
   console.log("AUTH REDIRECT: (" + req.params.subdomain + ")" + config.domain + "<-" + req.params.provider);
-//  res.clearCookie("session");
+  res.clearCookie("session");
   res.cookie('auth_subdomain', req.params.subdomain, { domain: "." + config.domain });
   res.redirect(config.protocol + config.domain +'/auth/' + req.params.provider);
 };
@@ -177,10 +177,11 @@ exports.authRedirect = function(req, res) {
 
 exports.rewriteSubdomain = function(req, res) {
   console.log(req.cookies);
+  console.log(req.isAuthenticated());
   var cookieSubdomain = req.cookies['auth_subdomain'];
   if(cookieSubdomain && cookieSubdomain.length) {
       console.log("Found subdomain: " + cookieSubdomain);
-     // res.clearCookie("auth_subdomain");
+      res.clearCookie("auth_subdomain");
       res.redirect(config.protocol + cookieSubdomain + "." + config.domain);
   } else {
     console.log("Didn't find a subdomain cookie - Maybe it expired?");

@@ -1,7 +1,6 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
-// var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
@@ -140,7 +139,7 @@ function process_auth_data(req, data, auth_id_qry, done){
       if(user){
         console.info(data.source + " account already linked to user.");
         req.flash('error', { msg: 'That ' + data.source + ' account has already been linked.' });
-        done(err);
+        return done(err, user);
       }else{
         console.info("Updating our records with anything new from the user.");
         User.findById(req.user.id, function(err, user) {
@@ -154,7 +153,7 @@ function process_auth_data(req, data, auth_id_qry, done){
           user.set(data.source) = data.id;
           user.save(function(err) {
             req.flash('success', { msg: 'Your' + data.source + ' account has been linked.' });
-            done(err, user);
+            return done(err, user);
           });
         });
       }
@@ -163,7 +162,7 @@ function process_auth_data(req, data, auth_id_qry, done){
     User.findOne(auth_id_qry, function(err, user) {
       if(user){
         console.info("Found the right user");
-        done(err, user);
+        return done(err, user);
       } else {
         User.findOne({ email: data.email }, function(err, user) {
           if(user){
@@ -188,7 +187,7 @@ function process_auth_data(req, data, auth_id_qry, done){
 
             newUser.save(function(err){
               req.flash('success', { msg: 'Your' + data.source +' account has been linked.' });
-              done(err, user);
+              return done(err, user);
             });
           }
         });
@@ -206,20 +205,21 @@ passport.use(new FacebookStrategy({
   passReqToCallback: true
 }, function(req, accessToken, refreshToken, data, done) {
     console.log("FACEEBOOK CALLBACK!!!");
-    console.log(JSON.stringify(profile));
+    console.log(JSON.stringify(data));
 
-    profile = data._json;
+    var profile = data._json;
 
     var userdata = {
-    'source': 'google',
+    'source': 'facebook',
     'id': profile.id,
-    'name': profile.name.givenName + " " + profile.name.familyName,
-    'link': profile.url,
-    'birthday': profile.birthday
+    'name': profile.first_name + " " + profile.last_name,
+    'link': profile.link,
+    'email': profile.email,
+    'birthday': profile.birthday,
     'gender': profile.gender
     };
 
-    if(profile._json.age_range) {
+    if(profile.age_range) {
       if(profile.age_range.min && !profile.age_range.max) {
         userdata.age_range = profile.age_range.min + " or over";
       } else if(!profile.age_range.min && profile.age_range.max) {
