@@ -30,7 +30,6 @@ $(function() {
 
     var formBuilder = $('.build-wrap').formBuilder(options);
 
-    debugger;
     /*
     var formBuilder = $('.build-wrap').formBuilder(options).data('formBuilder');
     $('.btn-org-save').click(function(e) {
