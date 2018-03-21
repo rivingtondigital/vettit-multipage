@@ -131,12 +131,10 @@ exports.signupPost = function(req, res, next) {
       req.flash('error', { msg: 'The email address you have entered is already associated with another account.' });
       return res.redirect('/signup');
     }
-
+    console.info(req.params.subdomain);
     if (req.params.subdomain){
       Org.findOne({subdomain: req.params.subdomain}, function(err, theOrg) {
-        if(theOrg){
-          admin = false;
-        } else {
+        if(theOrg == undefined){
           req.redirect('/');
         }
       }).then(function(env){
@@ -144,14 +142,27 @@ exports.signupPost = function(req, res, next) {
           name: req.body.name,
           email: req.body.email,
           password: req.body.password,
-          admin: admin
+          admin: false 
         });
+
         user.save(function(err) {
           req.logIn(user, function(err) {
             res.redirect('/');
           });
         });
       });
+    }else{
+      user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        admin: true
+      });
+      user.save(function(err){
+        req.logIn(user, function(err){
+          res.redirect('/'); 
+        });
+      })
     }
   });
 };
