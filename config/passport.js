@@ -200,7 +200,7 @@ function process_auth_data(req, data, auth_id_qry, done){
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_ID,
   clientSecret: process.env.FACEBOOK_SECRET,
-  callbackURL: '/auth/facebook/callback',
+  callbackURL: config.protocol + config.domain + "/auth/facebook/callback",
   profileFields: ['name', 'email', 'gender', 'location', 'link', 'birthday', 'age_range'],
   passReqToCallback: true
 }, function(req, accessToken, refreshToken, data, done) {
