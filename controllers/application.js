@@ -1,6 +1,7 @@
 var User = require('../models/User');
 var Org = require('../models/Org');
 var Application = require('../models/Application');
+var json2csv = require('json2csv');
 
 /**
  * GET subdomain.volunteercheck.co/status
@@ -231,5 +232,81 @@ exports.updateApplication = function(req, res) {
     });
   } else {
     res.redirect('/login');
+  }
+};
+
+
+/*
+ * GET /orgs/:id/applications/out/applications.csv
+ */
+
+exports.csvOutput = function(req, res){
+  if(req.isAuthenticated()){
+    console.log('hi there '+ req.user.id + ':' + req.params.id);
+    User.findById(req.user.id, function(err, theUser){
+      if(err){
+        console.log(err);
+        res.redirect('/');
+      }
+      if(theUser.org != req.params.id){
+        console.log(err);
+        res.sendStatus(403);
+      }
+      if(theUser && theUser.admin){
+        console.log("Good user: fetching applications");
+        res.setHeader('Content-disposition', 'attachment; filename=' + 'applicants.csv');
+        res.setHeader('Content-type', 'text/csv');
+
+        app_query = Application.find({'org': req.params.id}).populate('user');
+        app_query.exec(function(err, apps){
+          if(!err){
+            console.info("That happened: " + apps.length);
+
+            fields = [
+              'name',
+              'email',
+              'reviewed',
+              'accepted'
+            ]
+
+            data = []
+            for(indx in apps){
+              var app = apps[indx];
+              console.log(app);
+              var answers = JSON.parse(app.responsesJSON);
+              if(app.user){
+                var row = {
+                  'name': app.user.name,
+                  'email': app.user.email,
+                  'reviewed': app.reviewed,
+                  'accepted': app.accepted
+                };
+
+                for (ans_indx in answers){
+                  var ans = answers[ans_indx];
+                  if (fields.indexOf(ans.question) == -1){
+                    fields.push(ans.question);
+                  }
+                  row[ans.question] = ans.answer;
+                }
+                console.log(row);
+                data.push(row);
+              }else {
+                console.log('App: ' + app.id + ' does not reference a valid user');
+              }
+            }
+            var csv = json2csv({ 'data': data, 'fields': fields });
+            res.write(csv);
+            res.end()
+          } else{
+            console.log(err);
+            res.sendStatus(500);
+          }
+        });
+      }else{
+        console.log('CSV requested by non admin');
+      }
+    });
+
   }
 };
